@@ -181,6 +181,7 @@ paths:
     get:
       tags: [Salles]
       summary: Rechercher et lister les salles
+      security: []
       parameters:
         - name: search
           in: query
@@ -265,6 +266,7 @@ paths:
     get:
       tags: [Salles]
       summary: Consulter les détails d'une salle
+      security: []
       parameters:
         - $ref: '#/components/parameters/RoomId'
       responses:
@@ -331,6 +333,7 @@ paths:
     get:
       tags: [Disponibilités]
       summary: Consulter les disponibilités d'une salle
+      security: []
       parameters:
         - name: date
           in: query
