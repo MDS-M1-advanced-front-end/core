@@ -1,0 +1,27 @@
+# Travailler sans installer Node : seul Docker est nécessaire. Depuis ce dossier :
+#   docker compose run --rm node                 # toutes les vérifications (pnpm check)
+#   docker compose run --rm node pnpm test       # une commande au choix
+#   docker compose run --rm node pnpm add zod    # ajouter une dépendance
+# Les dépendances sont installées automatiquement à chaque lancement.
+services:
+  node:
+    build: .
+    environment:
+      # Cache pnpm dans son volume (sinon pnpm le crée dans le dossier du projet)
+      pnpm_config_store_dir: /home/node/.local/share/pnpm/store
+      # Détection des modifications faites depuis Windows ou macOS
+      VITEST_POLLING: '1'
+    entrypoint:
+      - sh
+      - -c
+      - pnpm install --reporter=silent && exec "$$@"
+      - --
+    command: [pnpm, check]
+    volumes:
+      - .:/app
+      - pnpm-store:/home/node/.local/share/pnpm
+      - cache:/home/node/.cache
+
+volumes:
+  pnpm-store:
+  cache:
