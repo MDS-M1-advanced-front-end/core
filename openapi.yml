@@ -86,6 +86,25 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
+  /auth/password:
+    patch:
+      tags: [Authentification]
+      summary: Modifier son mot de passe
+      description: Change le mot de passe de l'utilisateur connecté. L'ancien mot de passe est exigé.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+      responses:
+        '204':
+          description: Mot de passe modifié
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
   /users:
     get:
       tags: [Utilisateurs]
@@ -326,6 +345,8 @@ paths:
     put:
       tags: [Disponibilités]
       summary: Définir les disponibilités d'une salle
+      parameters:
+        - $ref: '#/components/parameters/RoomId'
       requestBody:
         required: true
         content:
@@ -735,6 +756,18 @@ components:
           example: 3600
         user:
           $ref: '#/components/schemas/User'
+
+    ChangePasswordRequest:
+      type: object
+      required: [currentPassword, newPassword]
+      properties:
+        currentPassword:
+          type: string
+          format: password
+        newPassword:
+          type: string
+          format: password
+          minLength: 8
 
     UserUpdateRequest:
       type: object
