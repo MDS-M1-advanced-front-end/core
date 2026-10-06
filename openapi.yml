@@ -395,6 +395,10 @@ paths:
     get:
       tags: [Réservations]
       summary: Consulter ses réservations
+      description: |
+        Renvoie uniquement les réservations de l'utilisateur connecté, y compris
+        celles au statut CANCELLED. Les filtres `from` et `to` portent sur la date
+        de début (`startAt`) et sont inclusifs.
       parameters:
         - name: status
           in: query
@@ -402,11 +406,13 @@ paths:
             $ref: '#/components/schemas/ReservationStatus'
         - name: from
           in: query
+          description: Réservations dont `startAt` est à partir de cette date (incluse)
           schema:
             type: string
             format: date
         - name: to
           in: query
+          description: Réservations dont `startAt` est jusqu'à cette date (incluse)
           schema:
             type: string
             format: date
@@ -419,11 +425,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedReservations'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
 
     post:
       tags: [Réservations]
       summary: Réserver une salle
-      description: Vérifie la disponibilité avant de créer la réservation.
+      description: |
+        Vérifie la disponibilité avant de créer la réservation.
+        La réservation est créée au statut PENDING, puis passe à CONFIRMED ou
+        REJECTED via `/confirm` ou `/reject`. `startAt` doit être strictement
+        antérieur à `endAt`, et `numberOfParticipants` ne doit pas dépasser la
+        capacité de la salle (sinon 400).
       requestBody:
         required: true
         content:
@@ -439,8 +454,12 @@ paths:
                 $ref: '#/components/schemas/Reservation'
         '400':
           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: Créneau indisponible
+          $ref: '#/components/responses/Conflict'
 
   /reservations/{reservationId}:
     get:
@@ -455,6 +474,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Reservation'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -463,6 +484,9 @@ paths:
     patch:
       tags: [Réservations]
       summary: Modifier une réservation
+      description: |
+        Seules les réservations PENDING ou CONFIRMED peuvent être modifiées (sinon 409).
+        Une modification du créneau d'une réservation CONFIRMED la repasse à PENDING.
       parameters:
         - $ref: '#/components/parameters/ReservationId'
       requestBody:
@@ -478,21 +502,41 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Reservation'
-        '409':
-          description: Nouveau créneau indisponible
-
-    delete:
-      tags: [Réservations]
-      summary: Annuler une réservation
-      parameters:
-        - $ref: '#/components/parameters/ReservationId'
-      responses:
-        '204':
-          description: Réservation annulée
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '409':
+          description: Nouveau créneau indisponible ou réservation non modifiable dans son statut actuel
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      tags: [Réservations]
+      summary: Annuler une réservation
+      description: |
+        Annulation logique : la réservation n'est pas supprimée, elle passe au
+        statut CANCELLED et reste consultable. Seules les réservations PENDING ou
+        CONFIRMED peuvent être annulées (sinon 409).
+      parameters:
+        - $ref: '#/components/parameters/ReservationId'
+      responses:
+        '204':
+          description: Réservation annulée (statut CANCELLED)
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
 
   /reservations/{reservationId}/confirm:
     post:
@@ -500,7 +544,7 @@ paths:
       summary: Confirmer une réservation
       description: |
         Utilisé par le gestionnaire de la salle ou un administrateur lorsque la validation est requise.
-        Seule une réservation au statut PENDING peut être confirmée.
+        Seule une réservation au statut PENDING peut être confirmée (sinon 409).
       parameters:
         - $ref: '#/components/parameters/ReservationId'
       responses:
@@ -533,7 +577,7 @@ paths:
       summary: Refuser une réservation
       description: |
         Utilisé par le gestionnaire de la salle ou un administrateur.
-        Seule une réservation au statut PENDING peut être refusée.
+        Seule une réservation au statut PENDING peut être refusée (sinon 409).
       parameters:
         - $ref: '#/components/parameters/ReservationId'
       requestBody:
@@ -541,10 +585,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                reason:
-                  type: string
+              $ref: '#/components/schemas/ReservationRejectRequest'
       responses:
         '200':
           description: Réservation refusée
@@ -764,7 +805,7 @@ components:
             $ref: '#/components/schemas/Error'
 
     Conflict:
-      description: Opération incompatible avec l'état actuel de la ressource
+      description: Conflit avec l'état actuel de la ressource (créneau indisponible, statut incompatible)
       content:
         application/json:
           schema:
@@ -987,6 +1028,10 @@ components:
 
     ReservationStatus:
       type: string
+      description: |
+        Cycle de vie : PENDING à la création, puis CONFIRMED ou REJECTED (gestionnaire/admin).
+        PENDING ou CONFIRMED peut passer à CANCELLED (annulation).
+        CONFIRMED passe à COMPLETED automatiquement une fois `endAt` dépassé.
       enum:
         - PENDING
         - CONFIRMED
@@ -1030,6 +1075,10 @@ components:
         totalAmount:
           type: number
           format: double
+          minimum: 0
+        currency:
+          type: string
+          example: EUR
         createdAt:
           type: string
           format: date-time
@@ -1055,6 +1104,7 @@ components:
 
     ReservationUpdateRequest:
       type: object
+      minProperties: 1
       properties:
         startAt:
           type: string
@@ -1066,6 +1116,12 @@ components:
           type: integer
           minimum: 1
         comment:
+          type: string
+
+    ReservationRejectRequest:
+      type: object
+      properties:
+        reason:
           type: string
 
     Payment:
@@ -1152,6 +1208,7 @@ components:
 
     PaginatedReservations:
       type: object
+      required: [items, page, pageSize, total]
       properties:
         items:
           type: array
