@@ -181,27 +181,30 @@ paths:
     get:
       tags: [Salles]
       summary: Rechercher et lister les salles
-      security: []
       parameters:
         - name: search
           in: query
           description: Recherche par nom ou description
           schema:
             type: string
+            maxLength: 255
         - name: location
           in: query
           schema:
             type: string
+            maxLength: 255
         - name: capacityMin
           in: query
           schema:
             type: integer
             minimum: 1
+            maximum: 10000
         - name: capacityMax
           in: query
           schema:
             type: integer
             minimum: 1
+            maximum: 10000
         - name: date
           in: query
           description: Date recherchée au format YYYY-MM-DD
@@ -231,6 +234,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedRooms'
+        '400':
+          $ref: '#/components/responses/BadRequest'
 
     post:
       tags: [Salles]
@@ -260,7 +265,6 @@ paths:
     get:
       tags: [Salles]
       summary: Consulter les détails d'une salle
-      security: []
       parameters:
         - $ref: '#/components/parameters/RoomId'
       responses:
@@ -327,7 +331,6 @@ paths:
     get:
       tags: [Disponibilités]
       summary: Consulter les disponibilités d'une salle
-      security: []
       parameters:
         - name: date
           in: query
@@ -352,6 +355,7 @@ paths:
             application/json:
               schema:
                 type: array
+                maxItems: 1000
                 items:
                   $ref: '#/components/schemas/AvailabilitySlot'
         '404':
