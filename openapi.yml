@@ -181,17 +181,20 @@ paths:
     get:
       tags: [Salles]
       summary: Rechercher et lister les salles
+      security: []
       parameters:
         - name: search
           in: query
           description: Recherche par nom ou description
           schema:
             type: string
+            minLength: 1
             maxLength: 255
         - name: location
           in: query
           schema:
             type: string
+            minLength: 1
             maxLength: 255
         - name: capacityMin
           in: query
@@ -199,12 +202,14 @@ paths:
             type: integer
             minimum: 1
             maximum: 10000
+            format: int32
         - name: capacityMax
           in: query
           schema:
             type: integer
             minimum: 1
             maximum: 10000
+            format: int32
         - name: date
           in: query
           description: Date recherchée au format YYYY-MM-DD
@@ -214,15 +219,14 @@ paths:
         - name: startTime
           in: query
           schema:
-            type: string
-            format: time
+            $ref: '#/components/schemas/TimeOfDay'
         - name: endTime
           in: query
           schema:
-            type: string
-            format: time
+            $ref: '#/components/schemas/TimeOfDay'
         - name: available
           in: query
+          description: Filtre sur la disponibilité ; ignoré sans `date`
           schema:
             type: boolean
         - $ref: '#/components/parameters/Page'
@@ -236,6 +240,12 @@ paths:
                 $ref: '#/components/schemas/PaginatedRooms'
         '400':
           $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
 
     post:
       tags: [Salles]
@@ -265,6 +275,7 @@ paths:
     get:
       tags: [Salles]
       summary: Consulter les détails d'une salle
+      security: []
       parameters:
         - $ref: '#/components/parameters/RoomId'
       responses:
@@ -274,8 +285,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Room'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
 
     patch:
       tags: [Salles]
@@ -331,6 +348,7 @@ paths:
     get:
       tags: [Disponibilités]
       summary: Consulter les disponibilités d'une salle
+      security: []
       parameters:
         - name: date
           in: query
@@ -341,13 +359,11 @@ paths:
         - name: startTime
           in: query
           schema:
-            type: string
-            format: time
+            $ref: '#/components/schemas/TimeOfDay'
         - name: endTime
           in: query
           schema:
-            type: string
-            format: time
+            $ref: '#/components/schemas/TimeOfDay'
       responses:
         '200':
           description: Créneaux disponibles
@@ -358,8 +374,14 @@ paths:
                 maxItems: 1000
                 items:
                   $ref: '#/components/schemas/AvailabilitySlot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
 
     put:
       tags: [Disponibilités]
@@ -811,6 +833,27 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
 
+    NotAcceptable:
+      description: Format de réponse demandé (en-tête Accept) non supporté
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    TooManyRequests:
+      description: Trop de requêtes, réessayer plus tard
+      headers:
+        Retry-After:
+          description: Délai en secondes avant de réessayer
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 86400
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
   schemas:
 
     UserRole:
@@ -1001,16 +1044,20 @@ components:
           type: string
           enum: [ACTIVE, INACTIVE]
 
+    TimeOfDay:
+      description: Heure locale au format HH:mm
+      type: string
+      pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+      example: '14:30'
+
     AvailabilitySlot:
       type: object
       required: [startTime, endTime, available]
       properties:
         startTime:
-          type: string
-          format: time
+          $ref: '#/components/schemas/TimeOfDay'
         endTime:
-          type: string
-          format: time
+          $ref: '#/components/schemas/TimeOfDay'
         available:
           type: boolean
 
@@ -1194,9 +1241,11 @@ components:
 
     PaginatedRooms:
       type: object
+      required: [items, page, pageSize, total]
       properties:
         items:
           type: array
+          maxItems: 100
           items:
             $ref: '#/components/schemas/Room'
         page:
