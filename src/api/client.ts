@@ -58,10 +58,13 @@ export async function toResult<T>(
 
 // Le schéma Error du contrat n'a aucun champ obligatoire : on complète ce qui manque
 function toApiError(status: number, body: unknown): ApiError {
-  const fields = typeof body === 'object' && body !== null ? (body as Record<string, unknown>) : {};
+  const { code, message } =
+    typeof body === 'object' && body !== null
+      ? (body as { code?: unknown; message?: unknown })
+      : {};
   return {
     status,
-    code: typeof fields.code === 'string' ? fields.code : `HTTP_${status}`,
-    message: typeof fields.message === 'string' ? fields.message : `Erreur HTTP ${status}`,
+    code: typeof code === 'string' ? code : `HTTP_${status}`,
+    message: typeof message === 'string' ? message : `Erreur HTTP ${status}`,
   };
 }
