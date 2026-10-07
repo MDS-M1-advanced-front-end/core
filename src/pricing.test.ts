@@ -10,4 +10,8 @@ describe('estimatePrice', () => {
   it('bills a partial hour pro rata', () => {
     expect(estimatePrice(40, '2026-11-16T14:00:00Z', '2026-11-16T15:30:00Z')).toBe(60);
   });
+
+  it('rounds to the cent', () => {
+    expect(estimatePrice(35.7, '2026-11-16T14:00:00Z', '2026-11-16T17:00:00Z')).toBe(107.1);
+  });
 });
