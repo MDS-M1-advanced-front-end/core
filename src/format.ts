@@ -95,3 +95,8 @@ export function parisToUtc(date: string, time: string): string {
   const timestamp = wallClockAsUtc - parisOffset(guess);
   return `${new Date(timestamp).toISOString().slice(0, 19)}Z`;
 }
+
+/** ISO UTC date-time → Paris date and time: `2026-10-12T09:00:00Z` → `2026-10-12`, `11:00`. */
+export function utcToParis(isoDateTime: string): ParisDateTime {
+  return parisWallClock(Date.parse(isoDateTime));
+}
