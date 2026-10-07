@@ -1,7 +1,8 @@
 const MS_PER_HOUR = 3_600_000;
 
 /**
- * Price shown before booking: hourly price × duration, pro rata for a partial hour.
+ * Price shown before booking: hourly price × duration, pro rata for a partial hour,
+ * rounded to the cent.
  * Contract anomaly #7: the API gives no price before POST /reservations; the
  * `totalAmount` it returns afterwards is the reference.
  *
@@ -10,5 +11,5 @@ const MS_PER_HOUR = 3_600_000;
  */
 export function estimatePrice(pricePerHour: number, startAt: string, endAt: string): number {
   const hours = (Date.parse(endAt) - Date.parse(startAt)) / MS_PER_HOUR;
-  return pricePerHour * hours;
+  return Math.round(pricePerHour * hours * 100) / 100;
 }
