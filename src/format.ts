@@ -34,10 +34,11 @@ export const formatTime = parisFormat({ hour: '2-digit', minute: '2-digit' });
 
 // Output keeps Intl's non-breaking spaces (U+202F for thousands, U+00A0 before `€`).
 const priceFormat = new Intl.NumberFormat(LOCALE, { style: 'currency', currency: 'EUR' });
-const shortPriceFormat = new Intl.NumberFormat(LOCALE, {
+// No `trailingZeroDisplay` (ES2023 lib): apps compiled with an ES2022 lib must type-check the core too
+const integerPriceFormat = new Intl.NumberFormat(LOCALE, {
   style: 'currency',
   currency: 'EUR',
-  trailingZeroDisplay: 'stripIfInteger',
+  minimumFractionDigits: 0,
 });
 
 /** `135` → `135,00 €` (lists, summaries). */
@@ -47,7 +48,7 @@ export function formatPrice(amount: number): string {
 
 /** `45` → `45 €`, `35.5` → `35,50 €` (room cards). */
 export function formatShortPrice(amount: number): string {
-  return shortPriceFormat.format(amount);
+  return (Number.isInteger(amount) ? integerPriceFormat : priceFormat).format(amount);
 }
 
 /** A Paris wall-clock moment, as the app's date and time inputs hold it. */
