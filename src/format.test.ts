@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatTime } from './format';
+import { formatDayMonth, formatLongDate, formatShortDate, formatTime } from './format';
 
 describe('formatTime', () => {
   it('shows a UTC instant in Paris summer time (UTC+2)', () => {
@@ -8,5 +8,29 @@ describe('formatTime', () => {
 
   it('shows a UTC instant in Paris winter time (UTC+1)', () => {
     expect(formatTime('2026-11-16T09:00:00Z')).toBe('10:00');
+  });
+});
+
+describe('formatLongDate', () => {
+  it('formats a calendar date (YYYY-MM-DD)', () => {
+    expect(formatLongDate('2026-11-16')).toBe('lundi 16 novembre 2026');
+  });
+
+  it('formats the Paris day of a UTC instant', () => {
+    expect(formatLongDate('2026-10-12T09:00:00Z')).toBe('lundi 12 octobre 2026');
+    // 22:30 UTC is already the next day in Paris
+    expect(formatLongDate('2026-10-12T22:30:00Z')).toBe('mardi 13 octobre 2026');
+  });
+});
+
+describe('formatShortDate', () => {
+  it('abbreviates weekday and month', () => {
+    expect(formatShortDate('2026-11-16')).toBe('lun. 16 nov. 2026');
+  });
+});
+
+describe('formatDayMonth', () => {
+  it('drops the year', () => {
+    expect(formatDayMonth('2026-10-12T09:00:00Z')).toBe('lun. 12 oct.');
   });
 });
