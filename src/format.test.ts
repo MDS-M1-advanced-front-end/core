@@ -1,5 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { formatDayMonth, formatLongDate, formatShortDate, formatTime } from './format';
+import {
+  formatDayMonth,
+  formatLongDate,
+  formatPrice,
+  formatShortDate,
+  formatShortPrice,
+  formatTime,
+} from './format';
+
+// Intl separates thousands with U+202F and the currency with U+00A0 (no line break inside).
+const NBSP = '\u00a0';
+const NNBSP = '\u202f';
 
 describe('formatTime', () => {
   it('shows a UTC instant in Paris summer time (UTC+2)', () => {
@@ -32,5 +43,22 @@ describe('formatShortDate', () => {
 describe('formatDayMonth', () => {
   it('drops the year', () => {
     expect(formatDayMonth('2026-10-12T09:00:00Z')).toBe('lun. 12 oct.');
+  });
+});
+
+describe('formatPrice', () => {
+  it('always shows two decimals', () => {
+    expect(formatPrice(135)).toBe(`135,00${NBSP}€`);
+    expect(formatPrice(1000)).toBe(`1${NNBSP}000,00${NBSP}€`);
+  });
+});
+
+describe('formatShortPrice', () => {
+  it('drops the decimals of a whole amount', () => {
+    expect(formatShortPrice(45)).toBe(`45${NBSP}€`);
+  });
+
+  it('keeps two decimals otherwise', () => {
+    expect(formatShortPrice(35.5)).toBe(`35,50${NBSP}€`);
   });
 });
