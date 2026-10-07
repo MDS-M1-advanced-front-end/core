@@ -31,3 +31,21 @@ export const formatDayMonth = parisFormat({ weekday: 'short', day: 'numeric', mo
 
 /** `2026-10-12T09:00:00Z` → `11:00` (Paris time). */
 export const formatTime = parisFormat({ hour: '2-digit', minute: '2-digit' });
+
+// Output keeps Intl's non-breaking spaces (U+202F for thousands, U+00A0 before `€`).
+const priceFormat = new Intl.NumberFormat(LOCALE, { style: 'currency', currency: 'EUR' });
+const shortPriceFormat = new Intl.NumberFormat(LOCALE, {
+  style: 'currency',
+  currency: 'EUR',
+  trailingZeroDisplay: 'stripIfInteger',
+});
+
+/** `135` → `135,00 €` (lists, summaries). */
+export function formatPrice(amount: number): string {
+  return priceFormat.format(amount);
+}
+
+/** `45` → `45 €`, `35.5` → `35,50 €` (room cards). */
+export function formatShortPrice(amount: number): string {
+  return shortPriceFormat.format(amount);
+}
