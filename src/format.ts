@@ -49,3 +49,49 @@ export function formatPrice(amount: number): string {
 export function formatShortPrice(amount: number): string {
   return shortPriceFormat.format(amount);
 }
+
+/** A Paris wall-clock moment, as the app's date and time inputs hold it. */
+export interface ParisDateTime {
+  /** `YYYY-MM-DD` */
+  date: string;
+  /** `HH:MM` */
+  time: string;
+}
+
+const wallClockFormat = new Intl.DateTimeFormat('en-US', {
+  timeZone: TIME_ZONE,
+  hourCycle: 'h23',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+});
+
+function parisWallClock(timestamp: number): ParisDateTime {
+  const parts = wallClockFormat.formatToParts(timestamp);
+  const part = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((p) => p.type === type)?.value ?? '';
+  return {
+    date: `${part('year')}-${part('month')}-${part('day')}`,
+    time: `${part('hour')}:${part('minute')}`,
+  };
+}
+
+/** Milliseconds to add to UTC to get Paris time at that instant (1 or 2 hours). */
+function parisOffset(timestamp: number): number {
+  const { date, time } = parisWallClock(timestamp);
+  return Date.parse(`${date}T${time}Z`) - timestamp;
+}
+
+/**
+ * Paris date and time (`HH:MM` or a slot's `HH:MM:SS`) → ISO UTC date-time in the API's
+ * format: `('2026-10-25', '10:00')` → `2026-10-25T09:00:00Z`.
+ */
+export function parisToUtc(date: string, time: string): string {
+  const wallClockAsUtc = Date.parse(`${date}T${time.slice(0, 5)}Z`);
+  // The offset depends on the instant itself: guess with the wall clock, then correct.
+  const guess = wallClockAsUtc - parisOffset(wallClockAsUtc);
+  const timestamp = wallClockAsUtc - parisOffset(guess);
+  return `${new Date(timestamp).toISOString().slice(0, 19)}Z`;
+}
