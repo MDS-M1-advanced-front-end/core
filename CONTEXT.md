@@ -35,6 +35,9 @@ _Éviter_ : slot, plage
 Demande d'un client d'occuper une salle sur une période donnée, pour un montant total.
 _Éviter_ : booking
 
+**Prix estimé** :
+Prix horaire de la salle × durée de la réservation, calculé avant de réserver ; le montant total renvoyé par le serveur fait foi.
+
 **Statut de réservation** :
 Étape du cycle de vie d'une réservation : en attente, confirmée, refusée, annulée ou terminée.
 

@@ -46,7 +46,7 @@ pnpm format        # Prettier
 
 ### Anomalies connues et contournements
 
-Les numéros sont repris dans les commentaires `Contract anomaly #n` de `src/api/client.ts`.
+Les numéros sont repris dans les commentaires `Contract anomaly #n` de `src/`.
 
 1. `AuthResponse` renvoie un `refreshToken`, mais aucun endpoint de rafraîchissement n'existe. Le client le transmet tel quel ; à l'expiration, l'app doit redemander une connexion.
 2. `PaginatedRooms` et `PaginatedUsers` ne déclarent aucun champ requis (contrairement à `PaginatedReservations`). Le client renvoie toujours un `Paginated<T>` complet : `items` vaut `[]`, `page` 1, `pageSize` 20 et `total` le nombre d'éléments reçus quand ils manquent.
@@ -54,6 +54,7 @@ Les numéros sont repris dans les commentaires `Contract anomaly #n` de `src/api
 4. `/admin/*` ne déclare pas de réponse `401`. Sans incidence : toute erreur HTTP devient un `ApiError`.
 5. Le `409` de `/auth/register` (et plus généralement le schéma `Error`, dont tous les champs sont optionnels) peut arriver sans corps. Le client produit alors `code: "HTTP_<status>"` et un message générique.
 6. `DELETE /reservations/{id}` n'efface rien : c'est une annulation (statut `CANCELLED`). Exposé sous le nom `reservations.cancel`.
+7. Aucun prix n'est connu avant `POST /reservations`. `estimatePrice(pricePerHour, startAt, endAt)` calcule un prix estimé (prix horaire × durée, au prorata, arrondi au centime) ; le `totalAmount` renvoyé par le serveur fait foi.
 
 ## Client API
 
@@ -74,3 +75,28 @@ if (!result.ok) {
 ```
 
 Le client ne lève jamais d'exception : erreurs HTTP, panne réseau (`status: 0`, `NETWORK_ERROR`) et réponse illisible (`INVALID_RESPONSE`) arrivent toutes dans `result.error`. Vocabulaire métier : voir `CONTEXT.md`.
+
+## Prix estimé et formats
+
+L'API parle en UTC (`2026-10-12T09:00:00Z`) ; l'app affiche tout en heure de Paris, en français, via `Intl` (aucune dépendance).
+
+```ts
+import { estimatePrice, formatPrice, formatTime, parisToUtc, utcToParis } from '@room-booking/core';
+
+const startAt = parisToUtc('2026-11-16', '15:00'); // '2026-11-16T14:00:00Z'
+const endAt = parisToUtc('2026-11-16', '18:00');
+formatPrice(estimatePrice(45, startAt, endAt)); // '135,00 €'
+formatTime('2026-10-12T09:00:00Z'); // '11:00'
+utcToParis('2026-10-12T09:00:00Z'); // { date: '2026-10-12', time: '11:00' }
+```
+
+| Fonction           | Exemple                  |
+| ------------------ | ------------------------ |
+| `formatLongDate`   | `lundi 16 novembre 2026` |
+| `formatShortDate`  | `lun. 16 nov. 2026`      |
+| `formatDayMonth`   | `lun. 12 oct.`           |
+| `formatTime`       | `11:00`                  |
+| `formatPrice`      | `135,00 €`, `1 000,00 €` |
+| `formatShortPrice` | `45 €`, `35,50 €`        |
+
+Les dates acceptent une date `YYYY-MM-DD` (valeur d'un champ date) ou une date-heure ISO de l'API. Les montants gardent les espaces insécables d'`Intl` (U+00A0 avant `€`, U+202F entre les milliers) : en test, écrire `'135,00\u00a0€'`, ou passer par Testing Library, qui normalise les espaces.
