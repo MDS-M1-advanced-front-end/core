@@ -6,6 +6,7 @@ import {
   formatShortDate,
   formatShortPrice,
   formatTime,
+  parisToUtc,
 } from './format';
 
 // Intl separates thousands with U+202F and the currency with U+00A0 (no line break inside).
@@ -60,5 +61,21 @@ describe('formatShortPrice', () => {
 
   it('keeps two decimals otherwise', () => {
     expect(formatShortPrice(35.5)).toBe(`35,50${NBSP}€`);
+  });
+});
+
+describe('parisToUtc', () => {
+  it('converts a Paris date and time to an ISO UTC date-time', () => {
+    expect(parisToUtc('2026-10-12', '11:00')).toBe('2026-10-12T09:00:00Z');
+    expect(parisToUtc('2026-11-16', '15:00')).toBe('2026-11-16T14:00:00Z');
+  });
+
+  it('follows the switch to winter time on Sunday 25 October 2026', () => {
+    expect(parisToUtc('2026-10-24', '10:00')).toBe('2026-10-24T08:00:00Z');
+    expect(parisToUtc('2026-10-25', '10:00')).toBe('2026-10-25T09:00:00Z');
+  });
+
+  it('accepts an availability slot time (HH:MM:SS)', () => {
+    expect(parisToUtc('2026-11-16', '15:00:00')).toBe('2026-11-16T14:00:00Z');
   });
 });
