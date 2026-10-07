@@ -10,7 +10,8 @@
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "skipLibCheck": true,
-    "noEmit": true
+    "noEmit": true,
+    "types": ["@types/node"]
   },
   "include": ["src"]
 }
