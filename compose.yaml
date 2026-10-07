@@ -21,7 +21,7 @@ services:
       - .:/app
       - pnpm-store:/home/node/.local/share/pnpm
       - cache:/home/node/.cache
-
+    extra_hosts: ['host.docker.internal:host-gateway']
 volumes:
   pnpm-store:
   cache:
