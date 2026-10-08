@@ -18,9 +18,9 @@ export const zUser = z.object({
 });
 
 export const zRegisterRequest = z.object({
-    firstName: z.string(),
-    lastName: z.string(),
-    email: z.email(),
+    firstName: z.string().max(100),
+    lastName: z.string().max(100),
+    email: z.email().max(254),
     password: z.string().min(8)
 });
 
@@ -32,7 +32,7 @@ export const zLoginRequest = z.object({
 export const zAuthResponse = z.object({
     accessToken: z.string(),
     refreshToken: z.string().optional(),
-    expiresIn: z.int().optional(),
+    expiresIn: z.int().gte(1).optional(),
     user: zUser
 });
 
@@ -42,11 +42,13 @@ export const zChangePasswordRequest = z.object({
 });
 
 export const zUserUpdateRequest = z.object({
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
-    email: z.email().optional(),
+    firstName: z.string().max(100).optional(),
+    lastName: z.string().max(100).optional(),
+    email: z.email().max(254).optional(),
     role: zUserRole.optional()
 });
+
+export const zRoomStatus = z.enum(['ACTIVE', 'INACTIVE']);
 
 export const zRoom = z.object({
     id: z.uuid(),
@@ -56,7 +58,7 @@ export const zRoom = z.object({
     location: z.string(),
     equipment: z.array(z.string()).optional(),
     pricePerHour: z.number().gte(0),
-    status: z.enum(['ACTIVE', 'INACTIVE']),
+    status: zRoomStatus,
     ownerId: z.uuid().optional(),
     imageUrl: z.url().optional(),
     createdAt: z.iso.datetime().optional()
@@ -80,7 +82,7 @@ export const zRoomUpdateRequest = z.object({
     equipment: z.array(z.string()).optional(),
     pricePerHour: z.number().gte(0).optional(),
     imageUrl: z.url().optional(),
-    status: z.enum(['ACTIVE', 'INACTIVE']).optional()
+    status: zRoomStatus.optional()
 });
 
 /**
@@ -98,6 +100,11 @@ export const zAvailabilityUpdateRequest = z.object({
     date: z.iso.date(),
     slots: z.array(zAvailabilitySlot)
 });
+
+/**
+ * Code devise ISO 4217 sur 3 lettres.
+ */
+export const zCurrency = z.string().regex(/^[A-Z]{3}$/);
 
 /**
  * Cycle de vie : PENDING à la création, puis CONFIRMED ou REJECTED (gestionnaire/admin).
@@ -123,7 +130,7 @@ export const zReservation = z.object({
     numberOfParticipants: z.int().gte(1).optional(),
     comment: z.string().optional(),
     totalAmount: z.number().gte(0),
-    currency: z.string().optional(),
+    currency: zCurrency,
     createdAt: z.iso.datetime().optional()
 });
 
@@ -149,8 +156,8 @@ export const zReservationRejectRequest = z.object({
 export const zPayment = z.object({
     id: z.uuid(),
     reservationId: z.uuid(),
-    amount: z.number(),
-    currency: z.string(),
+    amount: z.number().gte(0),
+    currency: zCurrency,
     status: z.enum([
         'PENDING',
         'PAID',
@@ -167,38 +174,35 @@ export const zPaymentCreateRequest = z.object({
 });
 
 export const zStatistics = z.object({
-    totalUsers: z.int().optional(),
-    totalRooms: z.int().optional(),
-    totalReservations: z.int().optional(),
-    confirmedReservations: z.int().optional(),
-    cancelledReservations: z.int().optional(),
-    totalRevenue: z.number().optional()
+    totalUsers: z.int().gte(0),
+    totalRooms: z.int().gte(0),
+    totalReservations: z.int().gte(0),
+    confirmedReservations: z.int().gte(0),
+    cancelledReservations: z.int().gte(0),
+    totalRevenue: z.number().gte(0)
 });
 
-export const zPaginatedUsers = z.object({
-    items: z.array(zUser).optional(),
-    page: z.int().optional(),
-    pageSize: z.int().optional(),
-    total: z.int().optional()
+export const zPageMeta = z.object({
+    page: z.int().gte(1),
+    pageSize: z.int().gte(1),
+    total: z.int().gte(0)
 });
 
-export const zPaginatedRooms = z.object({
-    items: z.array(zRoom).max(100),
-    page: z.int(),
-    pageSize: z.int(),
-    total: z.int()
-});
+export const zPaginatedUsers = zPageMeta.and(z.object({
+    items: z.array(zUser)
+}));
 
-export const zPaginatedReservations = z.object({
-    items: z.array(zReservation),
-    page: z.int(),
-    pageSize: z.int(),
-    total: z.int()
-});
+export const zPaginatedRooms = zPageMeta.and(z.object({
+    items: z.array(zRoom).max(100)
+}));
+
+export const zPaginatedReservations = zPageMeta.and(z.object({
+    items: z.array(zReservation)
+}));
 
 export const zError = z.object({
-    code: z.string().optional(),
-    message: z.string().optional(),
+    code: z.string(),
+    message: z.string(),
     details: z.record(z.string(), z.unknown()).optional()
 });
 
@@ -214,33 +218,33 @@ export const zPage = z.int().gte(1).default(1);
 
 export const zPageSize = z.int().gte(1).lte(100).default(20);
 
-export const zPostAuthRegisterBody = zRegisterRequest;
+export const zRegisterUserBody = zRegisterRequest;
 
 /**
  * Compte créé
  */
-export const zPostAuthRegisterResponse = zUser;
+export const zRegisterUserResponse = zUser;
 
-export const zPostAuthLoginBody = zLoginRequest;
+export const zLoginUserBody = zLoginRequest;
 
 /**
  * Authentification réussie
  */
-export const zPostAuthLoginResponse = zAuthResponse;
+export const zLoginUserResponse = zAuthResponse;
 
 /**
  * Profil utilisateur
  */
-export const zGetAuthMeResponse = zUser;
+export const zGetCurrentUserResponse = zUser;
 
-export const zPatchAuthPasswordBody = zChangePasswordRequest;
+export const zChangePasswordBody = zChangePasswordRequest;
 
 /**
  * Mot de passe modifié
  */
-export const zPatchAuthPasswordResponse = z.void();
+export const zChangePasswordResponse = z.void();
 
-export const zGetUsersQuery = z.object({
+export const zListUsersQuery = z.object({
     page: z.int().gte(1).optional().default(1),
     pageSize: z.int().gte(1).lte(100).optional().default(20),
     role: zUserRole.optional()
@@ -249,38 +253,38 @@ export const zGetUsersQuery = z.object({
 /**
  * Liste paginée des utilisateurs
  */
-export const zGetUsersResponse = zPaginatedUsers;
+export const zListUsersResponse = zPaginatedUsers;
 
-export const zDeleteUsersByUserIdPath = z.object({
+export const zDeleteUserPath = z.object({
     userId: z.uuid()
 });
 
 /**
  * Utilisateur supprimé
  */
-export const zDeleteUsersByUserIdResponse = z.void();
+export const zDeleteUserResponse = z.void();
 
-export const zGetUsersByUserIdPath = z.object({
+export const zGetUserPath = z.object({
     userId: z.uuid()
 });
 
 /**
  * Utilisateur
  */
-export const zGetUsersByUserIdResponse = zUser;
+export const zGetUserResponse = zUser;
 
-export const zPatchUsersByUserIdBody = zUserUpdateRequest;
+export const zUpdateUserBody = zUserUpdateRequest;
 
-export const zPatchUsersByUserIdPath = z.object({
+export const zUpdateUserPath = z.object({
     userId: z.uuid()
 });
 
 /**
  * Utilisateur modifié
  */
-export const zPatchUsersByUserIdResponse = zUser;
+export const zUpdateUserResponse = zUser;
 
-export const zGetRoomsQuery = z.object({
+export const zListRoomsQuery = z.object({
     search: z.string().min(1).max(255).optional(),
     location: z.string().min(1).max(255).optional(),
     capacityMin: z.int().gte(1).lte(10000).optional(),
@@ -296,71 +300,71 @@ export const zGetRoomsQuery = z.object({
 /**
  * Liste des salles
  */
-export const zGetRoomsResponse = zPaginatedRooms;
+export const zListRoomsResponse = zPaginatedRooms;
 
-export const zPostRoomsBody = zRoomCreateRequest;
+export const zCreateRoomBody = zRoomCreateRequest;
 
 /**
  * Salle créée
  */
-export const zPostRoomsResponse = zRoom;
+export const zCreateRoomResponse = zRoom;
 
-export const zDeleteRoomsByRoomIdPath = z.object({
+export const zDeleteRoomPath = z.object({
     roomId: z.uuid()
 });
 
 /**
  * Salle supprimée
  */
-export const zDeleteRoomsByRoomIdResponse = z.void();
+export const zDeleteRoomResponse = z.void();
 
-export const zGetRoomsByRoomIdPath = z.object({
+export const zGetRoomPath = z.object({
     roomId: z.uuid()
 });
 
 /**
  * Détails de la salle
  */
-export const zGetRoomsByRoomIdResponse = zRoom;
+export const zGetRoomResponse = zRoom;
 
-export const zPatchRoomsByRoomIdBody = zRoomUpdateRequest;
+export const zUpdateRoomBody = zRoomUpdateRequest;
 
-export const zPatchRoomsByRoomIdPath = z.object({
+export const zUpdateRoomPath = z.object({
     roomId: z.uuid()
 });
 
 /**
  * Salle modifiée
  */
-export const zPatchRoomsByRoomIdResponse = zRoom;
+export const zUpdateRoomResponse = zRoom;
 
-export const zGetRoomsByRoomIdAvailabilityPath = z.object({
+export const zGetRoomAvailabilityPath = z.object({
     roomId: z.uuid()
 });
 
-export const zGetRoomsByRoomIdAvailabilityQuery = z.object({
+export const zGetRoomAvailabilityQuery = z.object({
     date: z.iso.date(),
     startTime: zTimeOfDay.optional(),
     endTime: zTimeOfDay.optional()
 });
 
 /**
- * Créneaux disponibles
+ * Créneaux de la date (libres et occupés)
  */
-export const zGetRoomsByRoomIdAvailabilityResponse = z.array(zAvailabilitySlot).max(1000);
+export const zGetRoomAvailabilityResponse = z.array(zAvailabilitySlot).max(1000);
 
-export const zPutRoomsByRoomIdAvailabilityBody = zAvailabilityUpdateRequest;
+export const zSetRoomAvailabilityBody = zAvailabilityUpdateRequest;
 
-export const zPutRoomsByRoomIdAvailabilityPath = z.object({
+export const zSetRoomAvailabilityPath = z.object({
     roomId: z.uuid()
 });
 
 /**
  * Disponibilités mises à jour
  */
-export const zPutRoomsByRoomIdAvailabilityResponse = z.array(zAvailabilitySlot);
+export const zSetRoomAvailabilityResponse = z.array(zAvailabilitySlot);
 
-export const zGetReservationsQuery = z.object({
+export const zListReservationsQuery = z.object({
     status: zReservationStatus.optional(),
     from: z.iso.date().optional(),
     to: z.iso.date().optional(),
@@ -371,81 +375,81 @@ export const zGetReservationsQuery = z.object({
 /**
  * Liste des réservations
  */
-export const zGetReservationsResponse = zPaginatedReservations;
+export const zListReservationsResponse = zPaginatedReservations;
 
-export const zPostReservationsBody = zReservationCreateRequest;
+export const zCreateReservationBody = zReservationCreateRequest;
 
 /**
  * Réservation créée
  */
-export const zPostReservationsResponse = zReservation;
+export const zCreateReservationResponse = zReservation;
 
-export const zDeleteReservationsByReservationIdPath = z.object({
+export const zCancelReservationPath = z.object({
     reservationId: z.uuid()
 });
 
 /**
  * Réservation annulée (statut CANCELLED)
  */
-export const zDeleteReservationsByReservationIdResponse = z.void();
+export const zCancelReservationResponse = z.void();
 
-export const zGetReservationsByReservationIdPath = z.object({
+export const zGetReservationPath = z.object({
     reservationId: z.uuid()
 });
 
 /**
  * Réservation
  */
-export const zGetReservationsByReservationIdResponse = zReservation;
+export const zGetReservationResponse = zReservation;
 
-export const zPatchReservationsByReservationIdBody = zReservationUpdateRequest;
+export const zUpdateReservationBody = zReservationUpdateRequest;
 
-export const zPatchReservationsByReservationIdPath = z.object({
+export const zUpdateReservationPath = z.object({
     reservationId: z.uuid()
 });
 
 /**
  * Réservation modifiée
  */
-export const zPatchReservationsByReservationIdResponse = zReservation;
+export const zUpdateReservationResponse = zReservation;
 
-export const zPostReservationsByReservationIdConfirmPath = z.object({
+export const zConfirmReservationPath = z.object({
     reservationId: z.uuid()
 });
 
 /**
  * Réservation confirmée
  */
-export const zPostReservationsByReservationIdConfirmResponse = zReservation;
+export const zConfirmReservationResponse = zReservation;
 
-export const zPostReservationsByReservationIdRejectBody = zReservationRejectRequest;
+export const zRejectReservationBody = zReservationRejectRequest;
 
-export const zPostReservationsByReservationIdRejectPath = z.object({
+export const zRejectReservationPath = z.object({
     reservationId: z.uuid()
 });
 
 /**
  * Réservation refusée
  */
-export const zPostReservationsByReservationIdRejectResponse = zReservation;
+export const zRejectReservationResponse = zReservation;
 
-export const zPostPaymentsBody = zPaymentCreateRequest;
+export const zCreatePaymentBody = zPaymentCreateRequest;
 
 /**
  * Paiement initié
  */
-export const zPostPaymentsResponse = zPayment;
+export const zCreatePaymentResponse = zPayment;
 
-export const zGetPaymentsByPaymentIdPath = z.object({
+export const zGetPaymentPath = z.object({
     paymentId: z.uuid()
 });
 
 /**
  * Paiement
  */
-export const zGetPaymentsByPaymentIdResponse = zPayment;
+export const zGetPaymentResponse = zPayment;
 
-export const zGetAdminReservationsQuery = z.object({
+export const zListAdminReservationsQuery = z.object({
     status: zReservationStatus.optional(),
     roomId: z.uuid().optional(),
     userId: z.uuid().optional(),
@@ -456,7 +460,7 @@ export const zGetAdminReservationsQuery = z.object({
 /**
  * Réservations administratives
  */
-export const zGetAdminReservationsResponse = zPaginatedReservations;
+export const zListAdminReservationsResponse = zPaginatedReservations;
 
 export const zGetAdminStatisticsQuery = z.object({
     from: z.iso.date().optional(),

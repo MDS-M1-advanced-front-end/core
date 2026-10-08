@@ -30,6 +30,9 @@ export type LoginRequest = {
 export type AuthResponse = {
     accessToken: string;
     refreshToken?: string;
+    /**
+     * Durée de validité du jeton d'accès, en secondes.
+     */
     expiresIn?: number;
     user: User;
 };
@@ -46,6 +49,8 @@ export type UserUpdateRequest = {
     role?: UserRole;
 };
 
+export type RoomStatus = 'ACTIVE' | 'INACTIVE';
+
 export type Room = {
     id: string;
     name: string;
@@ -54,7 +59,7 @@ export type Room = {
     location: string;
     equipment?: Array<string>;
     pricePerHour: number;
-    status: 'ACTIVE' | 'INACTIVE';
+    status: RoomStatus;
     ownerId?: string;
     imageUrl?: string;
     createdAt?: string;
@@ -78,7 +83,7 @@ export type RoomUpdateRequest = {
     equipment?: Array<string>;
     pricePerHour?: number;
     imageUrl?: string;
-    status?: 'ACTIVE' | 'INACTIVE';
+    status?: RoomStatus;
 };
 
 /**
@@ -94,8 +99,16 @@ export type AvailabilitySlot = {
 
 export type AvailabilityUpdateRequest = {
     date: string;
+    /**
+     * Créneaux de la journée. Pour chaque créneau, startTime doit être strictement antérieur à endTime.
+     */
     slots: Array<AvailabilitySlot>;
 };
+
+/**
+ * Code devise ISO 4217 sur 3 lettres.
+ */
+export type Currency = string;
 
 /**
  * Cycle de vie : PENDING à la création, puis CONFIRMED ou REJECTED (gestionnaire/admin).
@@ -115,7 +128,7 @@ export type Reservation = {
     numberOfParticipants?: number;
     comment?: string;
     totalAmount: number;
-    currency?: string;
+    currency: Currency;
     createdAt?: string;
 };
 
@@ -142,7 +155,7 @@ export type Payment = {
     id: string;
     reservationId: string;
     amount: number;
-    currency: string;
+    currency: Currency;
     status: 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED';
     paymentUrl?: string;
     createdAt?: string;
@@ -154,38 +167,35 @@ export type PaymentCreateRequest = {
 };
 
 export type Statistics = {
-    totalUsers?: number;
-    totalRooms?: number;
-    totalReservations?: number;
-    confirmedReservations?: number;
-    cancelledReservations?: number;
-    totalRevenue?: number;
+    totalUsers: number;
+    totalRooms: number;
+    totalReservations: number;
+    confirmedReservations: number;
+    cancelledReservations: number;
+    totalRevenue: number;
 };
 
-export type PaginatedUsers = {
-    items?: Array<User>;
-    page?: number;
-    pageSize?: number;
-    total?: number;
+export type PageMeta = {
+    page: number;
+    pageSize: number;
+    total: number;
 };
 
-export type PaginatedRooms = {
+export type PaginatedUsers = PageMeta & {
+    items: Array<User>;
+};
+
+export type PaginatedRooms = PageMeta & {
     items: Array<Room>;
-    page: number;
-    pageSize: number;
-    total: number;
 };
 
-export type PaginatedReservations = {
+export type PaginatedReservations = PageMeta & {
     items: Array<Reservation>;
-    page: number;
-    pageSize: number;
-    total: number;
 };
 
 export type Error = {
-    code?: string;
-    message?: string;
+    code: string;
+    message: string;
     details?: {
         [key: string]: unknown;
     };
@@ -203,93 +213,43 @@ export type Page = number;
 
 export type PageSize = number;
 
-export type PostAuthRegisterData = {
+export type RegisterUserData = {
     body: RegisterRequest;
     path?: never;
     query?: never;
     url: '/auth/register';
 };
 
-export type PostAuthRegisterErrors = {
+export type RegisterUserErrors = {
     /**
      * Requête invalide
      */
     400: Error;
     /**
-     * Adresse e-mail déjà utilisée
+     * Conflit avec l'état actuel de la ressource (créneau indisponible, statut incompatible)
      */
-    409: unknown;
+    409: Error;
 };
 
-export type PostAuthRegisterError = PostAuthRegisterErrors[keyof PostAuthRegisterErrors];
+export type RegisterUserError = RegisterUserErrors[keyof RegisterUserErrors];
 
-export type PostAuthRegisterResponses = {
+export type RegisterUserResponses = {
     /**
      * Compte créé
      */
     201: User;
 };
 
-export type PostAuthRegisterResponse = PostAuthRegisterResponses[keyof PostAuthRegisterResponses];
+export type RegisterUserResponse = RegisterUserResponses[keyof RegisterUserResponses];
 
-export type PostAuthLoginData = {
+export type LoginUserData = {
     body: LoginRequest;
     path?: never;
     query?: never;
     url: '/auth/login';
 };
 
-export type PostAuthLoginErrors = {
-    /**
-     * Authentification requise ou invalide
-     */
-    401: Error;
-};
-
-export type PostAuthLoginError = PostAuthLoginErrors[keyof PostAuthLoginErrors];
-
-export type PostAuthLoginResponses = {
-    /**
-     * Authentification réussie
-     */
-    200: AuthResponse;
-};
-
-export type PostAuthLoginResponse = PostAuthLoginResponses[keyof PostAuthLoginResponses];
-
-export type GetAuthMeData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/auth/me';
-};
-
-export type GetAuthMeErrors = {
-    /**
-     * Authentification requise ou invalide
-     */
-    401: Error;
-};
-
-export type GetAuthMeError = GetAuthMeErrors[keyof GetAuthMeErrors];
-
-export type GetAuthMeResponses = {
-    /**
-     * Profil utilisateur
-     */
-    200: User;
-};
-
-export type GetAuthMeResponse = GetAuthMeResponses[keyof GetAuthMeResponses];
-
-export type PatchAuthPasswordData = {
-    body: ChangePasswordRequest;
-    path?: never;
-    query?: never;
-    url: '/auth/password';
-};
-
-export type PatchAuthPasswordErrors = {
+export type LoginUserErrors = {
     /**
      * Requête invalide
      */
@@ -300,47 +260,108 @@ export type PatchAuthPasswordErrors = {
     401: Error;
 };
 
-export type PatchAuthPasswordError = PatchAuthPasswordErrors[keyof PatchAuthPasswordErrors];
+export type LoginUserError = LoginUserErrors[keyof LoginUserErrors];
 
-export type PatchAuthPasswordResponses = {
+export type LoginUserResponses = {
+    /**
+     * Authentification réussie
+     */
+    200: AuthResponse;
+};
+
+export type LoginUserResponse = LoginUserResponses[keyof LoginUserResponses];
+
+export type GetCurrentUserData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/me';
+};
+
+export type GetCurrentUserErrors = {
+    /**
+     * Authentification requise ou invalide
+     */
+    401: Error;
+};
+
+export type GetCurrentUserError = GetCurrentUserErrors[keyof GetCurrentUserErrors];
+
+export type GetCurrentUserResponses = {
+    /**
+     * Profil utilisateur
+     */
+    200: User;
+};
+
+export type GetCurrentUserResponse = GetCurrentUserResponses[keyof GetCurrentUserResponses];
+
+export type ChangePasswordData = {
+    body: ChangePasswordRequest;
+    path?: never;
+    query?: never;
+    url: '/auth/password';
+};
+
+export type ChangePasswordErrors = {
+    /**
+     * Requête invalide
+     */
+    400: Error;
+    /**
+     * Authentification requise ou invalide
+     */
+    401: Error;
+};
+
+export type ChangePasswordError = ChangePasswordErrors[keyof ChangePasswordErrors];
+
+export type ChangePasswordResponses = {
     /**
      * Mot de passe modifié
      */
     204: void;
 };
 
-export type PatchAuthPasswordResponse = PatchAuthPasswordResponses[keyof PatchAuthPasswordResponses];
+export type ChangePasswordResponse = ChangePasswordResponses[keyof ChangePasswordResponses];
 
-export type GetUsersData = {
+export type ListUsersData = {
     body?: never;
     path?: never;
     query?: {
         page?: number;
         pageSize?: number;
+        /**
+         * Filtre les utilisateurs par rôle.
+         */
         role?: UserRole;
     };
     url: '/users';
 };
 
-export type GetUsersErrors = {
+export type ListUsersErrors = {
+    /**
+     * Authentification requise ou invalide
+     */
+    401: Error;
     /**
      * Accès interdit
      */
     403: Error;
 };
 
-export type GetUsersError = GetUsersErrors[keyof GetUsersErrors];
+export type ListUsersError = ListUsersErrors[keyof ListUsersErrors];
 
-export type GetUsersResponses = {
+export type ListUsersResponses = {
     /**
      * Liste paginée des utilisateurs
      */
     200: PaginatedUsers;
 };
 
-export type GetUsersResponse = GetUsersResponses[keyof GetUsersResponses];
+export type ListUsersResponse = ListUsersResponses[keyof ListUsersResponses];
 
-export type DeleteUsersByUserIdData = {
+export type DeleteUserData = {
     body?: never;
     path: {
         userId: string;
@@ -349,7 +370,11 @@ export type DeleteUsersByUserIdData = {
     url: '/users/{userId}';
 };
 
-export type DeleteUsersByUserIdErrors = {
+export type DeleteUserErrors = {
+    /**
+     * Authentification requise ou invalide
+     */
+    401: Error;
     /**
      * Accès interdit
      */
@@ -360,18 +385,18 @@ export type DeleteUsersByUserIdErrors = {
     404: Error;
 };
 
-export type DeleteUsersByUserIdError = DeleteUsersByUserIdErrors[keyof DeleteUsersByUserIdErrors];
+export type DeleteUserError = DeleteUserErrors[keyof DeleteUserErrors];
 
-export type DeleteUsersByUserIdResponses = {
+export type DeleteUserResponses = {
     /**
      * Utilisateur supprimé
      */
     204: void;
 };
 
-export type DeleteUsersByUserIdResponse = DeleteUsersByUserIdResponses[keyof DeleteUsersByUserIdResponses];
+export type DeleteUserResponse = DeleteUserResponses[keyof DeleteUserResponses];
 
-export type GetUsersByUserIdData = {
+export type GetUserData = {
     body?: never;
     path: {
         userId: string;
@@ -380,25 +405,29 @@ export type GetUsersByUserIdData = {
     url: '/users/{userId}';
 };
 
-export type GetUsersByUserIdErrors = {
+export type GetUserErrors = {
+    /**
+     * Authentification requise ou invalide
+     */
+    401: Error;
     /**
      * Ressource introuvable
      */
     404: Error;
 };
 
-export type GetUsersByUserIdError = GetUsersByUserIdErrors[keyof GetUsersByUserIdErrors];
+export type GetUserError = GetUserErrors[keyof GetUserErrors];
 
-export type GetUsersByUserIdResponses = {
+export type GetUserResponses = {
     /**
      * Utilisateur
      */
     200: User;
 };
 
-export type GetUsersByUserIdResponse = GetUsersByUserIdResponses[keyof GetUsersByUserIdResponses];
+export type GetUserResponse = GetUserResponses[keyof GetUserResponses];
 
-export type PatchUsersByUserIdData = {
+export type UpdateUserData = {
     body: UserUpdateRequest;
     path: {
         userId: string;
@@ -407,7 +436,15 @@ export type PatchUsersByUserIdData = {
     url: '/users/{userId}';
 };
 
-export type PatchUsersByUserIdErrors = {
+export type UpdateUserErrors = {
+    /**
+     * Requête invalide
+     */
+    400: Error;
+    /**
+     * Authentification requise ou invalide
+     */
+    401: Error;
     /**
      * Accès interdit
      */
@@ -418,18 +455,18 @@ export type PatchUsersByUserIdErrors = {
     404: Error;
 };
 
-export type PatchUsersByUserIdError = PatchUsersByUserIdErrors[keyof PatchUsersByUserIdErrors];
+export type UpdateUserError = UpdateUserErrors[keyof UpdateUserErrors];
 
-export type PatchUsersByUserIdResponses = {
+export type UpdateUserResponses = {
     /**
      * Utilisateur modifié
      */
     200: User;
 };
 
-export type PatchUsersByUserIdResponse = PatchUsersByUserIdResponses[keyof PatchUsersByUserIdResponses];
+export type UpdateUserResponse = UpdateUserResponses[keyof UpdateUserResponses];
 
-export type GetRoomsData = {
+export type ListRoomsData = {
     body?: never;
     path?: never;
     query?: {
@@ -456,15 +493,11 @@ export type GetRoomsData = {
     url: '/rooms';
 };
 
-export type GetRoomsErrors = {
+export type ListRoomsErrors = {
     /**
      * Requête invalide
      */
     400: Error;
-    /**
-     * Ressource introuvable
-     */
-    404: Error;
     /**
      * Format de réponse demandé (en-tête Accept) non supporté
      */
@@ -475,25 +508,25 @@ export type GetRoomsErrors = {
     429: Error;
 };
 
-export type GetRoomsError = GetRoomsErrors[keyof GetRoomsErrors];
+export type ListRoomsError = ListRoomsErrors[keyof ListRoomsErrors];
 
-export type GetRoomsResponses = {
+export type ListRoomsResponses = {
     /**
      * Liste des salles
      */
     200: PaginatedRooms;
 };
 
-export type GetRoomsResponse = GetRoomsResponses[keyof GetRoomsResponses];
+export type ListRoomsResponse = ListRoomsResponses[keyof ListRoomsResponses];
 
-export type PostRoomsData = {
+export type CreateRoomData = {
     body: RoomCreateRequest;
     path?: never;
     query?: never;
     url: '/rooms';
 };
 
-export type PostRoomsErrors = {
+export type CreateRoomErrors = {
     /**
      * Requête invalide
      */
@@ -508,18 +541,18 @@ export type PostRoomsErrors = {
     403: Error;
 };
 
-export type PostRoomsError = PostRoomsErrors[keyof PostRoomsErrors];
+export type CreateRoomError = CreateRoomErrors[keyof CreateRoomErrors];
 
-export type PostRoomsResponses = {
+export type CreateRoomResponses = {
     /**
      * Salle créée
      */
     201: Room;
 };
 
-export type PostRoomsResponse = PostRoomsResponses[keyof PostRoomsResponses];
+export type CreateRoomResponse = CreateRoomResponses[keyof CreateRoomResponses];
 
-export type DeleteRoomsByRoomIdData = {
+export type DeleteRoomData = {
     body?: never;
     path: {
         roomId: string;
@@ -528,7 +561,7 @@ export type DeleteRoomsByRoomIdData = {
     url: '/rooms/{roomId}';
 };
 
-export type DeleteRoomsByRoomIdErrors = {
+export type DeleteRoomErrors = {
     /**
      * Authentification requise ou invalide
      */
@@ -547,18 +580,18 @@ export type DeleteRoomsByRoomIdErrors = {
     409: Error;
 };
 
-export type DeleteRoomsByRoomIdError = DeleteRoomsByRoomIdErrors[keyof DeleteRoomsByRoomIdErrors];
+export type DeleteRoomError = DeleteRoomErrors[keyof DeleteRoomErrors];
 
-export type DeleteRoomsByRoomIdResponses = {
+export type DeleteRoomResponses = {
     /**
      * Salle supprimée
      */
     204: void;
 };
 
-export type DeleteRoomsByRoomIdResponse = DeleteRoomsByRoomIdResponses[keyof DeleteRoomsByRoomIdResponses];
+export type DeleteRoomResponse = DeleteRoomResponses[keyof DeleteRoomResponses];
 
-export type GetRoomsByRoomIdData = {
+export type GetRoomData = {
     body?: never;
     path: {
         roomId: string;
@@ -567,7 +600,7 @@ export type GetRoomsByRoomIdData = {
     url: '/rooms/{roomId}';
 };
 
-export type GetRoomsByRoomIdErrors = {
+export type GetRoomErrors = {
     /**
      * Requête invalide
      */
@@ -586,18 +619,18 @@ export type GetRoomsByRoomIdErrors = {
     429: Error;
 };
 
-export type GetRoomsByRoomIdError = GetRoomsByRoomIdErrors[keyof GetRoomsByRoomIdErrors];
+export type GetRoomError = GetRoomErrors[keyof GetRoomErrors];
 
-export type GetRoomsByRoomIdResponses = {
+export type GetRoomResponses = {
     /**
      * Détails de la salle
      */
     200: Room;
 };
 
-export type GetRoomsByRoomIdResponse = GetRoomsByRoomIdResponses[keyof GetRoomsByRoomIdResponses];
+export type GetRoomResponse = GetRoomResponses[keyof GetRoomResponses];
 
-export type PatchRoomsByRoomIdData = {
+export type UpdateRoomData = {
     body: RoomUpdateRequest;
     path: {
         roomId: string;
@@ -606,7 +639,7 @@ export type PatchRoomsByRoomIdData = {
     url: '/rooms/{roomId}';
 };
 
-export type PatchRoomsByRoomIdErrors = {
+export type UpdateRoomErrors = {
     /**
      * Requête invalide
      */
@@ -625,18 +658,18 @@ export type PatchRoomsByRoomIdErrors = {
     404: Error;
 };
 
-export type PatchRoomsByRoomIdError = PatchRoomsByRoomIdErrors[keyof PatchRoomsByRoomIdErrors];
+export type UpdateRoomError = UpdateRoomErrors[keyof UpdateRoomErrors];
 
-export type PatchRoomsByRoomIdResponses = {
+export type UpdateRoomResponses = {
     /**
      * Salle modifiée
      */
     200: Room;
 };
 
-export type PatchRoomsByRoomIdResponse = PatchRoomsByRoomIdResponses[keyof PatchRoomsByRoomIdResponses];
+export type UpdateRoomResponse = UpdateRoomResponses[keyof UpdateRoomResponses];
 
-export type GetRoomsByRoomIdAvailabilityData = {
+export type GetRoomAvailabilityData = {
     body?: never;
     path: {
         roomId: string;
@@ -649,7 +682,7 @@ export type GetRoomsByRoomIdAvailabilityData = {
     url: '/rooms/{roomId}/availability';
 };
 
-export type GetRoomsByRoomIdAvailabilityErrors = {
+export type GetRoomAvailabilityErrors = {
     /**
      * Requête invalide
      */
@@ -668,18 +701,18 @@ export type GetRoomsByRoomIdAvailabilityErrors = {
     429: Error;
 };
 
-export type GetRoomsByRoomIdAvailabilityError = GetRoomsByRoomIdAvailabilityErrors[keyof GetRoomsByRoomIdAvailabilityErrors];
+export type GetRoomAvailabilityError = GetRoomAvailabilityErrors[keyof GetRoomAvailabilityErrors];
 
-export type GetRoomsByRoomIdAvailabilityResponses = {
+export type GetRoomAvailabilityResponses = {
     /**
-     * Créneaux disponibles
+     * Créneaux de la date (libres et occupés)
      */
     200: Array<AvailabilitySlot>;
 };
 
-export type GetRoomsByRoomIdAvailabilityResponse = GetRoomsByRoomIdAvailabilityResponses[keyof GetRoomsByRoomIdAvailabilityResponses];
+export type GetRoomAvailabilityResponse = GetRoomAvailabilityResponses[keyof GetRoomAvailabilityResponses];
 
-export type PutRoomsByRoomIdAvailabilityData = {
+export type SetRoomAvailabilityData = {
     body: AvailabilityUpdateRequest;
     path: {
         roomId: string;
@@ -688,7 +721,7 @@ export type PutRoomsByRoomIdAvailabilityData = {
     url: '/rooms/{roomId}/availability';
 };
 
-export type PutRoomsByRoomIdAvailabilityErrors = {
+export type SetRoomAvailabilityErrors = {
     /**
      * Requête invalide
      */
@@ -705,20 +738,24 @@ export type PutRoomsByRoomIdAvailabilityErrors = {
      * Ressource introuvable
      */
     404: Error;
+    /**
+     * Conflit avec l'état actuel de la ressource (créneau indisponible, statut incompatible)
+     */
+    409: Error;
 };
 
-export type PutRoomsByRoomIdAvailabilityError = PutRoomsByRoomIdAvailabilityErrors[keyof PutRoomsByRoomIdAvailabilityErrors];
+export type SetRoomAvailabilityError = SetRoomAvailabilityErrors[keyof SetRoomAvailabilityErrors];
 
-export type PutRoomsByRoomIdAvailabilityResponses = {
+export type SetRoomAvailabilityResponses = {
     /**
      * Disponibilités mises à jour
      */
     200: Array<AvailabilitySlot>;
 };
 
-export type PutRoomsByRoomIdAvailabilityResponse = PutRoomsByRoomIdAvailabilityResponses[keyof PutRoomsByRoomIdAvailabilityResponses];
+export type SetRoomAvailabilityResponse = SetRoomAvailabilityResponses[keyof SetRoomAvailabilityResponses];
 
-export type GetReservationsData = {
+export type ListReservationsData = {
     body?: never;
     path?: never;
     query?: {
@@ -737,7 +774,7 @@ export type GetReservationsData = {
     url: '/reservations';
 };
 
-export type GetReservationsErrors = {
+export type ListReservationsErrors = {
     /**
      * Requête invalide
      */
@@ -748,25 +785,25 @@ export type GetReservationsErrors = {
     401: Error;
 };
 
-export type GetReservationsError = GetReservationsErrors[keyof GetReservationsErrors];
+export type ListReservationsError = ListReservationsErrors[keyof ListReservationsErrors];
 
-export type GetReservationsResponses = {
+export type ListReservationsResponses = {
     /**
      * Liste des réservations
      */
     200: PaginatedReservations;
 };
 
-export type GetReservationsResponse = GetReservationsResponses[keyof GetReservationsResponses];
+export type ListReservationsResponse = ListReservationsResponses[keyof ListReservationsResponses];
 
-export type PostReservationsData = {
+export type CreateReservationData = {
     body: ReservationCreateRequest;
     path?: never;
     query?: never;
     url: '/reservations';
 };
 
-export type PostReservationsErrors = {
+export type CreateReservationErrors = {
     /**
      * Requête invalide
      */
@@ -785,18 +822,18 @@ export type PostReservationsErrors = {
     409: Error;
 };
 
-export type PostReservationsError = PostReservationsErrors[keyof PostReservationsErrors];
+export type CreateReservationError = CreateReservationErrors[keyof CreateReservationErrors];
 
-export type PostReservationsResponses = {
+export type CreateReservationResponses = {
     /**
      * Réservation créée
      */
     201: Reservation;
 };
 
-export type PostReservationsResponse = PostReservationsResponses[keyof PostReservationsResponses];
+export type CreateReservationResponse = CreateReservationResponses[keyof CreateReservationResponses];
 
-export type DeleteReservationsByReservationIdData = {
+export type CancelReservationData = {
     body?: never;
     path: {
         reservationId: string;
@@ -805,7 +842,7 @@ export type DeleteReservationsByReservationIdData = {
     url: '/reservations/{reservationId}';
 };
 
-export type DeleteReservationsByReservationIdErrors = {
+export type CancelReservationErrors = {
     /**
      * Authentification requise ou invalide
      */
@@ -824,18 +861,18 @@ export type DeleteReservationsByReservationIdErrors = {
     409: Error;
 };
 
-export type DeleteReservationsByReservationIdError = DeleteReservationsByReservationIdErrors[keyof DeleteReservationsByReservationIdErrors];
+export type CancelReservationError = CancelReservationErrors[keyof CancelReservationErrors];
 
-export type DeleteReservationsByReservationIdResponses = {
+export type CancelReservationResponses = {
     /**
      * Réservation annulée (statut CANCELLED)
      */
     204: void;
 };
 
-export type DeleteReservationsByReservationIdResponse = DeleteReservationsByReservationIdResponses[keyof DeleteReservationsByReservationIdResponses];
+export type CancelReservationResponse = CancelReservationResponses[keyof CancelReservationResponses];
 
-export type GetReservationsByReservationIdData = {
+export type GetReservationData = {
     body?: never;
     path: {
         reservationId: string;
@@ -844,7 +881,7 @@ export type GetReservationsByReservationIdData = {
     url: '/reservations/{reservationId}';
 };
 
-export type GetReservationsByReservationIdErrors = {
+export type GetReservationErrors = {
     /**
      * Authentification requise ou invalide
      */
@@ -859,18 +896,18 @@ export type GetReservationsByReservationIdErrors = {
     404: Error;
 };
 
-export type GetReservationsByReservationIdError = GetReservationsByReservationIdErrors[keyof GetReservationsByReservationIdErrors];
+export type GetReservationError = GetReservationErrors[keyof GetReservationErrors];
 
-export type GetReservationsByReservationIdResponses = {
+export type GetReservationResponses = {
     /**
      * Réservation
      */
     200: Reservation;
 };
 
-export type GetReservationsByReservationIdResponse = GetReservationsByReservationIdResponses[keyof GetReservationsByReservationIdResponses];
+export type GetReservationResponse = GetReservationResponses[keyof GetReservationResponses];
 
-export type PatchReservationsByReservationIdData = {
+export type UpdateReservationData = {
     body: ReservationUpdateRequest;
     path: {
         reservationId: string;
@@ -879,7 +916,7 @@ export type PatchReservationsByReservationIdData = {
     url: '/reservations/{reservationId}';
 };
 
-export type PatchReservationsByReservationIdErrors = {
+export type UpdateReservationErrors = {
     /**
      * Requête invalide
      */
@@ -902,18 +939,18 @@ export type PatchReservationsByReservationIdErrors = {
     409: Error;
 };
 
-export type PatchReservationsByReservationIdError = PatchReservationsByReservationIdErrors[keyof PatchReservationsByReservationIdErrors];
+export type UpdateReservationError = UpdateReservationErrors[keyof UpdateReservationErrors];
 
-export type PatchReservationsByReservationIdResponses = {
+export type UpdateReservationResponses = {
     /**
      * Réservation modifiée
      */
     200: Reservation;
 };
 
-export type PatchReservationsByReservationIdResponse = PatchReservationsByReservationIdResponses[keyof PatchReservationsByReservationIdResponses];
+export type UpdateReservationResponse = UpdateReservationResponses[keyof UpdateReservationResponses];
 
-export type PostReservationsByReservationIdConfirmData = {
+export type ConfirmReservationData = {
     body?: never;
     path: {
         reservationId: string;
@@ -922,7 +959,7 @@ export type PostReservationsByReservationIdConfirmData = {
     url: '/reservations/{reservationId}/confirm';
 };
 
-export type PostReservationsByReservationIdConfirmErrors = {
+export type ConfirmReservationErrors = {
     /**
      * Authentification requise ou invalide
      */
@@ -941,18 +978,18 @@ export type PostReservationsByReservationIdConfirmErrors = {
     409: Error;
 };
 
-export type PostReservationsByReservationIdConfirmError = PostReservationsByReservationIdConfirmErrors[keyof PostReservationsByReservationIdConfirmErrors];
+export type ConfirmReservationError = ConfirmReservationErrors[keyof ConfirmReservationErrors];
 
-export type PostReservationsByReservationIdConfirmResponses = {
+export type ConfirmReservationResponses = {
     /**
      * Réservation confirmée
      */
     200: Reservation;
 };
 
-export type PostReservationsByReservationIdConfirmResponse = PostReservationsByReservationIdConfirmResponses[keyof PostReservationsByReservationIdConfirmResponses];
+export type ConfirmReservationResponse = ConfirmReservationResponses[keyof ConfirmReservationResponses];
 
-export type PostReservationsByReservationIdRejectData = {
+export type RejectReservationData = {
     body?: ReservationRejectRequest;
     path: {
         reservationId: string;
@@ -961,7 +998,7 @@ export type PostReservationsByReservationIdRejectData = {
     url: '/reservations/{reservationId}/reject';
 };
 
-export type PostReservationsByReservationIdRejectErrors = {
+export type RejectReservationErrors = {
     /**
      * Authentification requise ou invalide
      */
@@ -980,25 +1017,25 @@ export type PostReservationsByReservationIdRejectErrors = {
     409: Error;
 };
 
-export type PostReservationsByReservationIdRejectError = PostReservationsByReservationIdRejectErrors[keyof PostReservationsByReservationIdRejectErrors];
+export type RejectReservationError = RejectReservationErrors[keyof RejectReservationErrors];
 
-export type PostReservationsByReservationIdRejectResponses = {
+export type RejectReservationResponses = {
     /**
      * Réservation refusée
      */
     200: Reservation;
 };
 
-export type PostReservationsByReservationIdRejectResponse = PostReservationsByReservationIdRejectResponses[keyof PostReservationsByReservationIdRejectResponses];
+export type RejectReservationResponse = RejectReservationResponses[keyof RejectReservationResponses];
 
-export type PostPaymentsData = {
+export type CreatePaymentData = {
     body: PaymentCreateRequest;
     path?: never;
     query?: never;
     url: '/payments';
 };
 
-export type PostPaymentsErrors = {
+export type CreatePaymentErrors = {
     /**
      * Requête invalide
      */
@@ -1021,18 +1058,18 @@ export type PostPaymentsErrors = {
     409: Error;
 };
 
-export type PostPaymentsError = PostPaymentsErrors[keyof PostPaymentsErrors];
+export type CreatePaymentError = CreatePaymentErrors[keyof CreatePaymentErrors];
 
-export type PostPaymentsResponses = {
+export type CreatePaymentResponses = {
     /**
      * Paiement initié
      */
     201: Payment;
 };
 
-export type PostPaymentsResponse = PostPaymentsResponses[keyof PostPaymentsResponses];
+export type CreatePaymentResponse = CreatePaymentResponses[keyof CreatePaymentResponses];
 
-export type GetPaymentsByPaymentIdData = {
+export type GetPaymentData = {
     body?: never;
     path: {
         paymentId: string;
@@ -1041,7 +1078,7 @@ export type GetPaymentsByPaymentIdData = {
     url: '/payments/{paymentId}';
 };
 
-export type GetPaymentsByPaymentIdErrors = {
+export type GetPaymentErrors = {
     /**
      * Authentification requise ou invalide
      */
@@ -1056,18 +1093,18 @@ export type GetPaymentsByPaymentIdErrors = {
     404: Error;
 };
 
-export type GetPaymentsByPaymentIdError = GetPaymentsByPaymentIdErrors[keyof GetPaymentsByPaymentIdErrors];
+export type GetPaymentError = GetPaymentErrors[keyof GetPaymentErrors];
 
-export type GetPaymentsByPaymentIdResponses = {
+export type GetPaymentResponses = {
     /**
      * Paiement
      */
     200: Payment;
 };
 
-export type GetPaymentsByPaymentIdResponse = GetPaymentsByPaymentIdResponses[keyof GetPaymentsByPaymentIdResponses];
+export type GetPaymentResponse = GetPaymentResponses[keyof GetPaymentResponses];
 
-export type GetAdminReservationsData = {
+export type ListAdminReservationsData = {
     body?: never;
     path?: never;
     query?: {
@@ -1080,23 +1117,31 @@ export type GetAdminReservationsData = {
     url: '/admin/reservations';
 };
 
-export type GetAdminReservationsErrors = {
+export type ListAdminReservationsErrors = {
+    /**
+     * Requête invalide
+     */
+    400: Error;
+    /**
+     * Authentification requise ou invalide
+     */
+    401: Error;
     /**
      * Accès interdit
      */
     403: Error;
 };
 
-export type GetAdminReservationsError = GetAdminReservationsErrors[keyof GetAdminReservationsErrors];
+export type ListAdminReservationsError = ListAdminReservationsErrors[keyof ListAdminReservationsErrors];
 
-export type GetAdminReservationsResponses = {
+export type ListAdminReservationsResponses = {
     /**
      * Réservations administratives
      */
     200: PaginatedReservations;
 };
 
-export type GetAdminReservationsResponse = GetAdminReservationsResponses[keyof GetAdminReservationsResponses];
+export type ListAdminReservationsResponse = ListAdminReservationsResponses[keyof ListAdminReservationsResponses];
 
 export type GetAdminStatisticsData = {
     body?: never;
@@ -1109,6 +1154,14 @@ export type GetAdminStatisticsData = {
 };
 
 export type GetAdminStatisticsErrors = {
+    /**
+     * Requête invalide
+     */
+    400: Error;
+    /**
+     * Authentification requise ou invalide
+     */
+    401: Error;
     /**
      * Accès interdit
      */

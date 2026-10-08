@@ -4,8 +4,8 @@ import * as z from 'zod';
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { DeleteReservationsByReservationIdData, DeleteReservationsByReservationIdErrors, DeleteReservationsByReservationIdResponses, DeleteRoomsByRoomIdData, DeleteRoomsByRoomIdErrors, DeleteRoomsByRoomIdResponses, DeleteUsersByUserIdData, DeleteUsersByUserIdErrors, DeleteUsersByUserIdResponses, GetAdminReservationsData, GetAdminReservationsErrors, GetAdminReservationsResponses, GetAdminStatisticsData, GetAdminStatisticsErrors, GetAdminStatisticsResponses, GetAuthMeData, GetAuthMeErrors, GetAuthMeResponses, GetPaymentsByPaymentIdData, GetPaymentsByPaymentIdErrors, GetPaymentsByPaymentIdResponses, GetReservationsByReservationIdData, GetReservationsByReservationIdErrors, GetReservationsByReservationIdResponses, GetReservationsData, GetReservationsErrors, GetReservationsResponses, GetRoomsByRoomIdAvailabilityData, GetRoomsByRoomIdAvailabilityErrors, GetRoomsByRoomIdAvailabilityResponses, GetRoomsByRoomIdData, GetRoomsByRoomIdErrors, GetRoomsByRoomIdResponses, GetRoomsData, GetRoomsErrors, GetRoomsResponses, GetUsersByUserIdData, GetUsersByUserIdErrors, GetUsersByUserIdResponses, GetUsersData, GetUsersErrors, GetUsersResponses, PatchAuthPasswordData, PatchAuthPasswordErrors, PatchAuthPasswordResponses, PatchReservationsByReservationIdData, PatchReservationsByReservationIdErrors, PatchReservationsByReservationIdResponses, PatchRoomsByRoomIdData, PatchRoomsByRoomIdErrors, PatchRoomsByRoomIdResponses, PatchUsersByUserIdData, PatchUsersByUserIdErrors, PatchUsersByUserIdResponses, PostAuthLoginData, PostAuthLoginErrors, PostAuthLoginResponses, PostAuthRegisterData, PostAuthRegisterErrors, PostAuthRegisterResponses, PostPaymentsData, PostPaymentsErrors, PostPaymentsResponses, PostReservationsByReservationIdConfirmData, PostReservationsByReservationIdConfirmErrors, PostReservationsByReservationIdConfirmResponses, PostReservationsByReservationIdRejectData, PostReservationsByReservationIdRejectErrors, PostReservationsByReservationIdRejectResponses, PostReservationsData, PostReservationsErrors, PostReservationsResponses, PostRoomsData, PostRoomsErrors, PostRoomsResponses, PutRoomsByRoomIdAvailabilityData, PutRoomsByRoomIdAvailabilityErrors, PutRoomsByRoomIdAvailabilityResponses } from './types.gen';
-import { zDeleteReservationsByReservationIdPath, zDeleteReservationsByReservationIdResponse, zDeleteRoomsByRoomIdPath, zDeleteRoomsByRoomIdResponse, zDeleteUsersByUserIdPath, zDeleteUsersByUserIdResponse, zGetAdminReservationsQuery, zGetAdminReservationsResponse, zGetAdminStatisticsQuery, zGetAdminStatisticsResponse, zGetAuthMeResponse, zGetPaymentsByPaymentIdPath, zGetPaymentsByPaymentIdResponse, zGetReservationsByReservationIdPath, zGetReservationsByReservationIdResponse, zGetReservationsQuery, zGetReservationsResponse, zGetRoomsByRoomIdAvailabilityPath, zGetRoomsByRoomIdAvailabilityQuery, zGetRoomsByRoomIdAvailabilityResponse, zGetRoomsByRoomIdPath, zGetRoomsByRoomIdResponse, zGetRoomsQuery, zGetRoomsResponse, zGetUsersByUserIdPath, zGetUsersByUserIdResponse, zGetUsersQuery, zGetUsersResponse, zPatchAuthPasswordBody, zPatchAuthPasswordResponse, zPatchReservationsByReservationIdBody, zPatchReservationsByReservationIdPath, zPatchReservationsByReservationIdResponse, zPatchRoomsByRoomIdBody, zPatchRoomsByRoomIdPath, zPatchRoomsByRoomIdResponse, zPatchUsersByUserIdBody, zPatchUsersByUserIdPath, zPatchUsersByUserIdResponse, zPostAuthLoginBody, zPostAuthLoginResponse, zPostAuthRegisterBody, zPostAuthRegisterResponse, zPostPaymentsBody, zPostPaymentsResponse, zPostReservationsBody, zPostReservationsByReservationIdConfirmPath, zPostReservationsByReservationIdConfirmResponse, zPostReservationsByReservationIdRejectBody, zPostReservationsByReservationIdRejectPath, zPostReservationsByReservationIdRejectResponse, zPostReservationsResponse, zPostRoomsBody, zPostRoomsResponse, zPutRoomsByRoomIdAvailabilityBody, zPutRoomsByRoomIdAvailabilityPath, zPutRoomsByRoomIdAvailabilityResponse } from './zod.gen';
+import type { CancelReservationData, CancelReservationErrors, CancelReservationResponses, ChangePasswordData, ChangePasswordErrors, ChangePasswordResponses, ConfirmReservationData, ConfirmReservationErrors, ConfirmReservationResponses, CreatePaymentData, CreatePaymentErrors, CreatePaymentResponses, CreateReservationData, CreateReservationErrors, CreateReservationResponses, CreateRoomData, CreateRoomErrors, CreateRoomResponses, DeleteRoomData, DeleteRoomErrors, DeleteRoomResponses, DeleteUserData, DeleteUserErrors, DeleteUserResponses, GetAdminStatisticsData, GetAdminStatisticsErrors, GetAdminStatisticsResponses, GetCurrentUserData, GetCurrentUserErrors, GetCurrentUserResponses, GetPaymentData, GetPaymentErrors, GetPaymentResponses, GetReservationData, GetReservationErrors, GetReservationResponses, GetRoomAvailabilityData, GetRoomAvailabilityErrors, GetRoomAvailabilityResponses, GetRoomData, GetRoomErrors, GetRoomResponses, GetUserData, GetUserErrors, GetUserResponses, ListAdminReservationsData, ListAdminReservationsErrors, ListAdminReservationsResponses, ListReservationsData, ListReservationsErrors, ListReservationsResponses, ListRoomsData, ListRoomsErrors, ListRoomsResponses, ListUsersData, ListUsersErrors, ListUsersResponses, LoginUserData, LoginUserErrors, LoginUserResponses, RegisterUserData, RegisterUserErrors, RegisterUserResponses, RejectReservationData, RejectReservationErrors, RejectReservationResponses, SetRoomAvailabilityData, SetRoomAvailabilityErrors, SetRoomAvailabilityResponses, UpdateReservationData, UpdateReservationErrors, UpdateReservationResponses, UpdateRoomData, UpdateRoomErrors, UpdateRoomResponses, UpdateUserData, UpdateUserErrors, UpdateUserResponses } from './types.gen';
+import { zCancelReservationPath, zCancelReservationResponse, zChangePasswordBody, zChangePasswordResponse, zConfirmReservationPath, zConfirmReservationResponse, zCreatePaymentBody, zCreatePaymentResponse, zCreateReservationBody, zCreateReservationResponse, zCreateRoomBody, zCreateRoomResponse, zDeleteRoomPath, zDeleteRoomResponse, zDeleteUserPath, zDeleteUserResponse, zGetAdminStatisticsQuery, zGetAdminStatisticsResponse, zGetCurrentUserResponse, zGetPaymentPath, zGetPaymentResponse, zGetReservationPath, zGetReservationResponse, zGetRoomAvailabilityPath, zGetRoomAvailabilityQuery, zGetRoomAvailabilityResponse, zGetRoomPath, zGetRoomResponse, zGetUserPath, zGetUserResponse, zListAdminReservationsQuery, zListAdminReservationsResponse, zListReservationsQuery, zListReservationsResponse, zListRoomsQuery, zListRoomsResponse, zListUsersQuery, zListUsersResponse, zLoginUserBody, zLoginUserResponse, zRegisterUserBody, zRegisterUserResponse, zRejectReservationBody, zRejectReservationPath, zRejectReservationResponse, zSetRoomAvailabilityBody, zSetRoomAvailabilityPath, zSetRoomAvailabilityResponse, zUpdateReservationBody, zUpdateReservationPath, zUpdateReservationResponse, zUpdateRoomBody, zUpdateRoomPath, zUpdateRoomResponse, zUpdateUserBody, zUpdateUserPath, zUpdateUserResponse } from './zod.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -23,14 +23,16 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 
 /**
  * Créer un compte utilisateur
+ *
+ * Crée un compte client. Renvoie 409 si l'adresse e-mail est déjà utilisée.
  */
-export const postAuthRegister = <ThrowOnError extends boolean = false>(options: Options<PostAuthRegisterData, ThrowOnError>): RequestResult<PostAuthRegisterResponses, PostAuthRegisterErrors, ThrowOnError> => (options.client ?? client).post<PostAuthRegisterResponses, PostAuthRegisterErrors, ThrowOnError>({
+export const registerUser = <ThrowOnError extends boolean = false>(options: Options<RegisterUserData, ThrowOnError>): RequestResult<RegisterUserResponses, RegisterUserErrors, ThrowOnError> => (options.client ?? client).post<RegisterUserResponses, RegisterUserErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
-        body: zPostAuthRegisterBody,
+        body: zRegisterUserBody,
         path: z.never().optional(),
         query: z.never().optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zPostAuthRegisterResponse.parseAsync(data),
+    responseValidator: async (data) => await zRegisterUserResponse.parseAsync(data),
     url: '/auth/register',
     ...options,
     headers: {
@@ -42,13 +44,13 @@ export const postAuthRegister = <ThrowOnError extends boolean = false>(options: 
 /**
  * Se connecter
  */
-export const postAuthLogin = <ThrowOnError extends boolean = false>(options: Options<PostAuthLoginData, ThrowOnError>): RequestResult<PostAuthLoginResponses, PostAuthLoginErrors, ThrowOnError> => (options.client ?? client).post<PostAuthLoginResponses, PostAuthLoginErrors, ThrowOnError>({
+export const loginUser = <ThrowOnError extends boolean = false>(options: Options<LoginUserData, ThrowOnError>): RequestResult<LoginUserResponses, LoginUserErrors, ThrowOnError> => (options.client ?? client).post<LoginUserResponses, LoginUserErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
-        body: zPostAuthLoginBody,
+        body: zLoginUserBody,
         path: z.never().optional(),
         query: z.never().optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zPostAuthLoginResponse.parseAsync(data),
+    responseValidator: async (data) => await zLoginUserResponse.parseAsync(data),
     url: '/auth/login',
     ...options,
     headers: {
@@ -60,13 +62,13 @@ export const postAuthLogin = <ThrowOnError extends boolean = false>(options: Opt
 /**
  * Récupérer le profil de l'utilisateur connecté
  */
-export const getAuthMe = <ThrowOnError extends boolean = false>(options?: Options<GetAuthMeData, ThrowOnError>): RequestResult<GetAuthMeResponses, GetAuthMeErrors, ThrowOnError> => (options?.client ?? client).get<GetAuthMeResponses, GetAuthMeErrors, ThrowOnError>({
+export const getCurrentUser = <ThrowOnError extends boolean = false>(options?: Options<GetCurrentUserData, ThrowOnError>): RequestResult<GetCurrentUserResponses, GetCurrentUserErrors, ThrowOnError> => (options?.client ?? client).get<GetCurrentUserResponses, GetCurrentUserErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
         body: z.never().optional(),
         path: z.never().optional(),
         query: z.never().optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zGetAuthMeResponse.parseAsync(data),
+    responseValidator: async (data) => await zGetCurrentUserResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/auth/me',
     ...options
@@ -77,13 +79,13 @@ export const getAuthMe = <ThrowOnError extends boolean = false>(options?: Option
  *
  * Change le mot de passe de l'utilisateur connecté. L'ancien mot de passe est exigé.
  */
-export const patchAuthPassword = <ThrowOnError extends boolean = false>(options: Options<PatchAuthPasswordData, ThrowOnError>): RequestResult<PatchAuthPasswordResponses, PatchAuthPasswordErrors, ThrowOnError> => (options.client ?? client).patch<PatchAuthPasswordResponses, PatchAuthPasswordErrors, ThrowOnError>({
+export const changePassword = <ThrowOnError extends boolean = false>(options: Options<ChangePasswordData, ThrowOnError>): RequestResult<ChangePasswordResponses, ChangePasswordErrors, ThrowOnError> => (options.client ?? client).patch<ChangePasswordResponses, ChangePasswordErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
-        body: zPatchAuthPasswordBody,
+        body: zChangePasswordBody,
         path: z.never().optional(),
         query: z.never().optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zPatchAuthPasswordResponse.parseAsync(data),
+    responseValidator: async (data) => await zChangePasswordResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/auth/password',
     ...options,
@@ -98,13 +100,13 @@ export const patchAuthPassword = <ThrowOnError extends boolean = false>(options:
  *
  * Réservé aux administrateurs.
  */
-export const getUsers = <ThrowOnError extends boolean = false>(options?: Options<GetUsersData, ThrowOnError>): RequestResult<GetUsersResponses, GetUsersErrors, ThrowOnError> => (options?.client ?? client).get<GetUsersResponses, GetUsersErrors, ThrowOnError>({
+export const listUsers = <ThrowOnError extends boolean = false>(options?: Options<ListUsersData, ThrowOnError>): RequestResult<ListUsersResponses, ListUsersErrors, ThrowOnError> => (options?.client ?? client).get<ListUsersResponses, ListUsersErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
         body: z.never().optional(),
         path: z.never().optional(),
-        query: zGetUsersQuery.optional()
+        query: zListUsersQuery.optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zGetUsersResponse.parseAsync(data),
+    responseValidator: async (data) => await zListUsersResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/users',
     ...options
@@ -112,14 +114,16 @@ export const getUsers = <ThrowOnError extends boolean = false>(options?: Options
 
 /**
  * Supprimer un utilisateur
+ *
+ * Réservé aux administrateurs.
  */
-export const deleteUsersByUserId = <ThrowOnError extends boolean = false>(options: Options<DeleteUsersByUserIdData, ThrowOnError>): RequestResult<DeleteUsersByUserIdResponses, DeleteUsersByUserIdErrors, ThrowOnError> => (options.client ?? client).delete<DeleteUsersByUserIdResponses, DeleteUsersByUserIdErrors, ThrowOnError>({
+export const deleteUser = <ThrowOnError extends boolean = false>(options: Options<DeleteUserData, ThrowOnError>): RequestResult<DeleteUserResponses, DeleteUserErrors, ThrowOnError> => (options.client ?? client).delete<DeleteUserResponses, DeleteUserErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
         body: z.never().optional(),
-        path: zDeleteUsersByUserIdPath,
+        path: zDeleteUserPath,
         query: z.never().optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zDeleteUsersByUserIdResponse.parseAsync(data),
+    responseValidator: async (data) => await zDeleteUserResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/users/{userId}',
     ...options
@@ -127,14 +131,16 @@ export const deleteUsersByUserId = <ThrowOnError extends boolean = false>(option
 
 /**
  * Consulter un utilisateur
+ *
+ * Réservé à l'utilisateur concerné ou à un administrateur.
  */
-export const getUsersByUserId = <ThrowOnError extends boolean = false>(options: Options<GetUsersByUserIdData, ThrowOnError>): RequestResult<GetUsersByUserIdResponses, GetUsersByUserIdErrors, ThrowOnError> => (options.client ?? client).get<GetUsersByUserIdResponses, GetUsersByUserIdErrors, ThrowOnError>({
+export const getUser = <ThrowOnError extends boolean = false>(options: Options<GetUserData, ThrowOnError>): RequestResult<GetUserResponses, GetUserErrors, ThrowOnError> => (options.client ?? client).get<GetUserResponses, GetUserErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
         body: z.never().optional(),
-        path: zGetUsersByUserIdPath,
+        path: zGetUserPath,
         query: z.never().optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zGetUsersByUserIdResponse.parseAsync(data),
+    responseValidator: async (data) => await zGetUserResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/users/{userId}',
     ...options
@@ -142,14 +148,18 @@ export const getUsersByUserId = <ThrowOnError extends boolean = false>(options: 
 
 /**
  * Modifier un utilisateur
+ *
+ * Réservé à l'utilisateur concerné ou à un administrateur.
+ * Le champ role ne peut être modifié que par un administrateur.
+ *
  */
-export const patchUsersByUserId = <ThrowOnError extends boolean = false>(options: Options<PatchUsersByUserIdData, ThrowOnError>): RequestResult<PatchUsersByUserIdResponses, PatchUsersByUserIdErrors, ThrowOnError> => (options.client ?? client).patch<PatchUsersByUserIdResponses, PatchUsersByUserIdErrors, ThrowOnError>({
+export const updateUser = <ThrowOnError extends boolean = false>(options: Options<UpdateUserData, ThrowOnError>): RequestResult<UpdateUserResponses, UpdateUserErrors, ThrowOnError> => (options.client ?? client).patch<UpdateUserResponses, UpdateUserErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
-        body: zPatchUsersByUserIdBody,
-        path: zPatchUsersByUserIdPath,
+        body: zUpdateUserBody,
+        path: zUpdateUserPath,
         query: z.never().optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zPatchUsersByUserIdResponse.parseAsync(data),
+    responseValidator: async (data) => await zUpdateUserResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/users/{userId}',
     ...options,
@@ -161,14 +171,18 @@ export const patchUsersByUserId = <ThrowOnError extends boolean = false>(options
 
 /**
  * Rechercher et lister les salles
+ *
+ * Filtres de capacité : capacityMin doit être inférieur ou égal à capacityMax.
+ * startTime et endTime ne s'appliquent qu'avec `date`.
+ *
  */
-export const getRooms = <ThrowOnError extends boolean = false>(options?: Options<GetRoomsData, ThrowOnError>): RequestResult<GetRoomsResponses, GetRoomsErrors, ThrowOnError> => (options?.client ?? client).get<GetRoomsResponses, GetRoomsErrors, ThrowOnError>({
+export const listRooms = <ThrowOnError extends boolean = false>(options?: Options<ListRoomsData, ThrowOnError>): RequestResult<ListRoomsResponses, ListRoomsErrors, ThrowOnError> => (options?.client ?? client).get<ListRoomsResponses, ListRoomsErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
         body: z.never().optional(),
         path: z.never().optional(),
-        query: zGetRoomsQuery.optional()
+        query: zListRoomsQuery.optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zGetRoomsResponse.parseAsync(data),
+    responseValidator: async (data) => await zListRoomsResponse.parseAsync(data),
     url: '/rooms',
     ...options
 });
@@ -177,14 +191,16 @@ export const getRooms = <ThrowOnError extends boolean = false>(options?: Options
  * Ajouter une salle
  *
  * Réservé aux propriétaires/gestionnaires et administrateurs.
+ * Le statut initial de la salle est ACTIVE.
+ *
  */
-export const postRooms = <ThrowOnError extends boolean = false>(options: Options<PostRoomsData, ThrowOnError>): RequestResult<PostRoomsResponses, PostRoomsErrors, ThrowOnError> => (options.client ?? client).post<PostRoomsResponses, PostRoomsErrors, ThrowOnError>({
+export const createRoom = <ThrowOnError extends boolean = false>(options: Options<CreateRoomData, ThrowOnError>): RequestResult<CreateRoomResponses, CreateRoomErrors, ThrowOnError> => (options.client ?? client).post<CreateRoomResponses, CreateRoomErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
-        body: zPostRoomsBody,
+        body: zCreateRoomBody,
         path: z.never().optional(),
         query: z.never().optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zPostRoomsResponse.parseAsync(data),
+    responseValidator: async (data) => await zCreateRoomResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/rooms',
     ...options,
@@ -199,13 +215,13 @@ export const postRooms = <ThrowOnError extends boolean = false>(options: Options
  *
  * Réservé au gestionnaire propriétaire de la salle et aux administrateurs.
  */
-export const deleteRoomsByRoomId = <ThrowOnError extends boolean = false>(options: Options<DeleteRoomsByRoomIdData, ThrowOnError>): RequestResult<DeleteRoomsByRoomIdResponses, DeleteRoomsByRoomIdErrors, ThrowOnError> => (options.client ?? client).delete<DeleteRoomsByRoomIdResponses, DeleteRoomsByRoomIdErrors, ThrowOnError>({
+export const deleteRoom = <ThrowOnError extends boolean = false>(options: Options<DeleteRoomData, ThrowOnError>): RequestResult<DeleteRoomResponses, DeleteRoomErrors, ThrowOnError> => (options.client ?? client).delete<DeleteRoomResponses, DeleteRoomErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
         body: z.never().optional(),
-        path: zDeleteRoomsByRoomIdPath,
+        path: zDeleteRoomPath,
         query: z.never().optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zDeleteRoomsByRoomIdResponse.parseAsync(data),
+    responseValidator: async (data) => await zDeleteRoomResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/rooms/{roomId}',
     ...options
@@ -214,13 +230,13 @@ export const deleteRoomsByRoomId = <ThrowOnError extends boolean = false>(option
 /**
  * Consulter les détails d'une salle
  */
-export const getRoomsByRoomId = <ThrowOnError extends boolean = false>(options: Options<GetRoomsByRoomIdData, ThrowOnError>): RequestResult<GetRoomsByRoomIdResponses, GetRoomsByRoomIdErrors, ThrowOnError> => (options.client ?? client).get<GetRoomsByRoomIdResponses, GetRoomsByRoomIdErrors, ThrowOnError>({
+export const getRoom = <ThrowOnError extends boolean = false>(options: Options<GetRoomData, ThrowOnError>): RequestResult<GetRoomResponses, GetRoomErrors, ThrowOnError> => (options.client ?? client).get<GetRoomResponses, GetRoomErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
         body: z.never().optional(),
-        path: zGetRoomsByRoomIdPath,
+        path: zGetRoomPath,
         query: z.never().optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zGetRoomsByRoomIdResponse.parseAsync(data),
+    responseValidator: async (data) => await zGetRoomResponse.parseAsync(data),
     url: '/rooms/{roomId}',
     ...options
 });
@@ -232,13 +248,13 @@ export const getRoomsByRoomId = <ThrowOnError extends boolean = false>(options: 
  * Modification partielle : seuls les champs envoyés sont modifiés.
  *
  */
-export const patchRoomsByRoomId = <ThrowOnError extends boolean = false>(options: Options<PatchRoomsByRoomIdData, ThrowOnError>): RequestResult<PatchRoomsByRoomIdResponses, PatchRoomsByRoomIdErrors, ThrowOnError> => (options.client ?? client).patch<PatchRoomsByRoomIdResponses, PatchRoomsByRoomIdErrors, ThrowOnError>({
+export const updateRoom = <ThrowOnError extends boolean = false>(options: Options<UpdateRoomData, ThrowOnError>): RequestResult<UpdateRoomResponses, UpdateRoomErrors, ThrowOnError> => (options.client ?? client).patch<UpdateRoomResponses, UpdateRoomErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
-        body: zPatchRoomsByRoomIdBody,
-        path: zPatchRoomsByRoomIdPath,
+        body: zUpdateRoomBody,
+        path: zUpdateRoomPath,
         query: z.never().optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zPatchRoomsByRoomIdResponse.parseAsync(data),
+    responseValidator: async (data) => await zUpdateRoomResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/rooms/{roomId}',
     ...options,
@@ -250,14 +266,18 @@ export const patchRoomsByRoomId = <ThrowOnError extends boolean = false>(options
 
 /**
  * Consulter les disponibilités d'une salle
+ *
+ * Renvoie les créneaux de la date demandée. Le champ `available` indique si
+ * le créneau est libre. Les paramètres startTime et endTime bornent la plage.
+ *
  */
-export const getRoomsByRoomIdAvailability = <ThrowOnError extends boolean = false>(options: Options<GetRoomsByRoomIdAvailabilityData, ThrowOnError>): RequestResult<GetRoomsByRoomIdAvailabilityResponses, GetRoomsByRoomIdAvailabilityErrors, ThrowOnError> => (options.client ?? client).get<GetRoomsByRoomIdAvailabilityResponses, GetRoomsByRoomIdAvailabilityErrors, ThrowOnError>({
+export const getRoomAvailability = <ThrowOnError extends boolean = false>(options: Options<GetRoomAvailabilityData, ThrowOnError>): RequestResult<GetRoomAvailabilityResponses, GetRoomAvailabilityErrors, ThrowOnError> => (options.client ?? client).get<GetRoomAvailabilityResponses, GetRoomAvailabilityErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
         body: z.never().optional(),
-        path: zGetRoomsByRoomIdAvailabilityPath,
-        query: zGetRoomsByRoomIdAvailabilityQuery
+        path: zGetRoomAvailabilityPath,
+        query: zGetRoomAvailabilityQuery
     }).parseAsync(data),
-    responseValidator: async (data) => await zGetRoomsByRoomIdAvailabilityResponse.parseAsync(data),
+    responseValidator: async (data) => await zGetRoomAvailabilityResponse.parseAsync(data),
     url: '/rooms/{roomId}/availability',
     ...options
 });
@@ -269,13 +289,13 @@ export const getRoomsByRoomIdAvailability = <ThrowOnError extends boolean = fals
  * Remplace l'ensemble des créneaux de la date indiquée.
  *
  */
-export const putRoomsByRoomIdAvailability = <ThrowOnError extends boolean = false>(options: Options<PutRoomsByRoomIdAvailabilityData, ThrowOnError>): RequestResult<PutRoomsByRoomIdAvailabilityResponses, PutRoomsByRoomIdAvailabilityErrors, ThrowOnError> => (options.client ?? client).put<PutRoomsByRoomIdAvailabilityResponses, PutRoomsByRoomIdAvailabilityErrors, ThrowOnError>({
+export const setRoomAvailability = <ThrowOnError extends boolean = false>(options: Options<SetRoomAvailabilityData, ThrowOnError>): RequestResult<SetRoomAvailabilityResponses, SetRoomAvailabilityErrors, ThrowOnError> => (options.client ?? client).put<SetRoomAvailabilityResponses, SetRoomAvailabilityErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
-        body: zPutRoomsByRoomIdAvailabilityBody,
-        path: zPutRoomsByRoomIdAvailabilityPath,
+        body: zSetRoomAvailabilityBody,
+        path: zSetRoomAvailabilityPath,
         query: z.never().optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zPutRoomsByRoomIdAvailabilityResponse.parseAsync(data),
+    responseValidator: async (data) => await zSetRoomAvailabilityResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/rooms/{roomId}/availability',
     ...options,
@@ -293,13 +313,13 @@ export const putRoomsByRoomIdAvailability = <ThrowOnError extends boolean = fals
  * de début (`startAt`) et sont inclusifs.
  *
  */
-export const getReservations = <ThrowOnError extends boolean = false>(options?: Options<GetReservationsData, ThrowOnError>): RequestResult<GetReservationsResponses, GetReservationsErrors, ThrowOnError> => (options?.client ?? client).get<GetReservationsResponses, GetReservationsErrors, ThrowOnError>({
+export const listReservations = <ThrowOnError extends boolean = false>(options?: Options<ListReservationsData, ThrowOnError>): RequestResult<ListReservationsResponses, ListReservationsErrors, ThrowOnError> => (options?.client ?? client).get<ListReservationsResponses, ListReservationsErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
         body: z.never().optional(),
         path: z.never().optional(),
-        query: zGetReservationsQuery.optional()
+        query: zListReservationsQuery.optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zGetReservationsResponse.parseAsync(data),
+    responseValidator: async (data) => await zListReservationsResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/reservations',
     ...options
@@ -315,13 +335,13 @@ export const getReservations = <ThrowOnError extends boolean = false>(options?: 
  * capacité de la salle (sinon 400).
  *
  */
-export const postReservations = <ThrowOnError extends boolean = false>(options: Options<PostReservationsData, ThrowOnError>): RequestResult<PostReservationsResponses, PostReservationsErrors, ThrowOnError> => (options.client ?? client).post<PostReservationsResponses, PostReservationsErrors, ThrowOnError>({
+export const createReservation = <ThrowOnError extends boolean = false>(options: Options<CreateReservationData, ThrowOnError>): RequestResult<CreateReservationResponses, CreateReservationErrors, ThrowOnError> => (options.client ?? client).post<CreateReservationResponses, CreateReservationErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
-        body: zPostReservationsBody,
+        body: zCreateReservationBody,
         path: z.never().optional(),
         query: z.never().optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zPostReservationsResponse.parseAsync(data),
+    responseValidator: async (data) => await zCreateReservationResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/reservations',
     ...options,
@@ -339,13 +359,13 @@ export const postReservations = <ThrowOnError extends boolean = false>(options: 
  * CONFIRMED peuvent être annulées (sinon 409).
  *
  */
-export const deleteReservationsByReservationId = <ThrowOnError extends boolean = false>(options: Options<DeleteReservationsByReservationIdData, ThrowOnError>): RequestResult<DeleteReservationsByReservationIdResponses, DeleteReservationsByReservationIdErrors, ThrowOnError> => (options.client ?? client).delete<DeleteReservationsByReservationIdResponses, DeleteReservationsByReservationIdErrors, ThrowOnError>({
+export const cancelReservation = <ThrowOnError extends boolean = false>(options: Options<CancelReservationData, ThrowOnError>): RequestResult<CancelReservationResponses, CancelReservationErrors, ThrowOnError> => (options.client ?? client).delete<CancelReservationResponses, CancelReservationErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
         body: z.never().optional(),
-        path: zDeleteReservationsByReservationIdPath,
+        path: zCancelReservationPath,
         query: z.never().optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zDeleteReservationsByReservationIdResponse.parseAsync(data),
+    responseValidator: async (data) => await zCancelReservationResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/reservations/{reservationId}',
     ...options
@@ -353,14 +373,16 @@ export const deleteReservationsByReservationId = <ThrowOnError extends boolean =
 
 /**
  * Consulter une réservation
+ *
+ * Réservé au client propriétaire, au gestionnaire de la salle ou à un administrateur.
  */
-export const getReservationsByReservationId = <ThrowOnError extends boolean = false>(options: Options<GetReservationsByReservationIdData, ThrowOnError>): RequestResult<GetReservationsByReservationIdResponses, GetReservationsByReservationIdErrors, ThrowOnError> => (options.client ?? client).get<GetReservationsByReservationIdResponses, GetReservationsByReservationIdErrors, ThrowOnError>({
+export const getReservation = <ThrowOnError extends boolean = false>(options: Options<GetReservationData, ThrowOnError>): RequestResult<GetReservationResponses, GetReservationErrors, ThrowOnError> => (options.client ?? client).get<GetReservationResponses, GetReservationErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
         body: z.never().optional(),
-        path: zGetReservationsByReservationIdPath,
+        path: zGetReservationPath,
         query: z.never().optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zGetReservationsByReservationIdResponse.parseAsync(data),
+    responseValidator: async (data) => await zGetReservationResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/reservations/{reservationId}',
     ...options
@@ -373,13 +395,13 @@ export const getReservationsByReservationId = <ThrowOnError extends boolean = fa
  * Une modification du créneau d'une réservation CONFIRMED la repasse à PENDING.
  *
  */
-export const patchReservationsByReservationId = <ThrowOnError extends boolean = false>(options: Options<PatchReservationsByReservationIdData, ThrowOnError>): RequestResult<PatchReservationsByReservationIdResponses, PatchReservationsByReservationIdErrors, ThrowOnError> => (options.client ?? client).patch<PatchReservationsByReservationIdResponses, PatchReservationsByReservationIdErrors, ThrowOnError>({
+export const updateReservation = <ThrowOnError extends boolean = false>(options: Options<UpdateReservationData, ThrowOnError>): RequestResult<UpdateReservationResponses, UpdateReservationErrors, ThrowOnError> => (options.client ?? client).patch<UpdateReservationResponses, UpdateReservationErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
-        body: zPatchReservationsByReservationIdBody,
-        path: zPatchReservationsByReservationIdPath,
+        body: zUpdateReservationBody,
+        path: zUpdateReservationPath,
         query: z.never().optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zPatchReservationsByReservationIdResponse.parseAsync(data),
+    responseValidator: async (data) => await zUpdateReservationResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/reservations/{reservationId}',
     ...options,
@@ -396,13 +418,13 @@ export const patchReservationsByReservationId = <ThrowOnError extends boolean = 
  * Seule une réservation au statut PENDING peut être confirmée (sinon 409).
  *
  */
-export const postReservationsByReservationIdConfirm = <ThrowOnError extends boolean = false>(options: Options<PostReservationsByReservationIdConfirmData, ThrowOnError>): RequestResult<PostReservationsByReservationIdConfirmResponses, PostReservationsByReservationIdConfirmErrors, ThrowOnError> => (options.client ?? client).post<PostReservationsByReservationIdConfirmResponses, PostReservationsByReservationIdConfirmErrors, ThrowOnError>({
+export const confirmReservation = <ThrowOnError extends boolean = false>(options: Options<ConfirmReservationData, ThrowOnError>): RequestResult<ConfirmReservationResponses, ConfirmReservationErrors, ThrowOnError> => (options.client ?? client).post<ConfirmReservationResponses, ConfirmReservationErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
         body: z.never().optional(),
-        path: zPostReservationsByReservationIdConfirmPath,
+        path: zConfirmReservationPath,
         query: z.never().optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zPostReservationsByReservationIdConfirmResponse.parseAsync(data),
+    responseValidator: async (data) => await zConfirmReservationResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/reservations/{reservationId}/confirm',
     ...options
@@ -415,13 +437,13 @@ export const postReservationsByReservationIdConfirm = <ThrowOnError extends bool
  * Seule une réservation au statut PENDING peut être refusée (sinon 409).
  *
  */
-export const postReservationsByReservationIdReject = <ThrowOnError extends boolean = false>(options: Options<PostReservationsByReservationIdRejectData, ThrowOnError>): RequestResult<PostReservationsByReservationIdRejectResponses, PostReservationsByReservationIdRejectErrors, ThrowOnError> => (options.client ?? client).post<PostReservationsByReservationIdRejectResponses, PostReservationsByReservationIdRejectErrors, ThrowOnError>({
+export const rejectReservation = <ThrowOnError extends boolean = false>(options: Options<RejectReservationData, ThrowOnError>): RequestResult<RejectReservationResponses, RejectReservationErrors, ThrowOnError> => (options.client ?? client).post<RejectReservationResponses, RejectReservationErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
-        body: zPostReservationsByReservationIdRejectBody.optional(),
-        path: zPostReservationsByReservationIdRejectPath,
+        body: zRejectReservationBody.optional(),
+        path: zRejectReservationPath,
         query: z.never().optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zPostReservationsByReservationIdRejectResponse.parseAsync(data),
+    responseValidator: async (data) => await zRejectReservationResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/reservations/{reservationId}/reject',
     ...options,
@@ -435,14 +457,16 @@ export const postReservationsByReservationIdReject = <ThrowOnError extends boole
  * Initier le paiement d'une réservation
  *
  * Réservé au client auteur de la réservation.
+ * Renvoie 409 si la réservation est déjà payée.
+ *
  */
-export const postPayments = <ThrowOnError extends boolean = false>(options: Options<PostPaymentsData, ThrowOnError>): RequestResult<PostPaymentsResponses, PostPaymentsErrors, ThrowOnError> => (options.client ?? client).post<PostPaymentsResponses, PostPaymentsErrors, ThrowOnError>({
+export const createPayment = <ThrowOnError extends boolean = false>(options: Options<CreatePaymentData, ThrowOnError>): RequestResult<CreatePaymentResponses, CreatePaymentErrors, ThrowOnError> => (options.client ?? client).post<CreatePaymentResponses, CreatePaymentErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
-        body: zPostPaymentsBody,
+        body: zCreatePaymentBody,
         path: z.never().optional(),
         query: z.never().optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zPostPaymentsResponse.parseAsync(data),
+    responseValidator: async (data) => await zCreatePaymentResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/payments',
     ...options,
@@ -454,14 +478,16 @@ export const postPayments = <ThrowOnError extends boolean = false>(options: Opti
 
 /**
  * Consulter le statut d'un paiement
+ *
+ * Réservé au client auteur de la réservation liée ou à un administrateur.
  */
-export const getPaymentsByPaymentId = <ThrowOnError extends boolean = false>(options: Options<GetPaymentsByPaymentIdData, ThrowOnError>): RequestResult<GetPaymentsByPaymentIdResponses, GetPaymentsByPaymentIdErrors, ThrowOnError> => (options.client ?? client).get<GetPaymentsByPaymentIdResponses, GetPaymentsByPaymentIdErrors, ThrowOnError>({
+export const getPayment = <ThrowOnError extends boolean = false>(options: Options<GetPaymentData, ThrowOnError>): RequestResult<GetPaymentResponses, GetPaymentErrors, ThrowOnError> => (options.client ?? client).get<GetPaymentResponses, GetPaymentErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
         body: z.never().optional(),
-        path: zGetPaymentsByPaymentIdPath,
+        path: zGetPaymentPath,
         query: z.never().optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zGetPaymentsByPaymentIdResponse.parseAsync(data),
+    responseValidator: async (data) => await zGetPaymentResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/payments/{paymentId}',
     ...options
@@ -472,13 +498,13 @@ export const getPaymentsByPaymentId = <ThrowOnError extends boolean = false>(opt
  *
  * Réservé aux administrateurs.
  */
-export const getAdminReservations = <ThrowOnError extends boolean = false>(options?: Options<GetAdminReservationsData, ThrowOnError>): RequestResult<GetAdminReservationsResponses, GetAdminReservationsErrors, ThrowOnError> => (options?.client ?? client).get<GetAdminReservationsResponses, GetAdminReservationsErrors, ThrowOnError>({
+export const listAdminReservations = <ThrowOnError extends boolean = false>(options?: Options<ListAdminReservationsData, ThrowOnError>): RequestResult<ListAdminReservationsResponses, ListAdminReservationsErrors, ThrowOnError> => (options?.client ?? client).get<ListAdminReservationsResponses, ListAdminReservationsErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
         body: z.never().optional(),
         path: z.never().optional(),
-        query: zGetAdminReservationsQuery.optional()
+        query: zListAdminReservationsQuery.optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zGetAdminReservationsResponse.parseAsync(data),
+    responseValidator: async (data) => await zListAdminReservationsResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/admin/reservations',
     ...options
