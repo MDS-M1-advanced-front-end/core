@@ -31,7 +31,9 @@ paths:
   /auth/register:
     post:
       tags: [Authentification]
+      operationId: registerUser
       summary: Créer un compte utilisateur
+      description: Crée un compte client. Renvoie 409 si l'adresse e-mail est déjà utilisée.
       security: []
       requestBody:
         required: true
@@ -49,11 +51,12 @@ paths:
         '400':
           $ref: '#/components/responses/BadRequest'
         '409':
-          description: Adresse e-mail déjà utilisée
+          $ref: '#/components/responses/Conflict'
 
   /auth/login:
     post:
       tags: [Authentification]
+      operationId: loginUser
       summary: Se connecter
       security: []
       requestBody:
@@ -69,12 +72,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
 
   /auth/me:
     get:
       tags: [Authentification]
+      operationId: getCurrentUser
       summary: Récupérer le profil de l'utilisateur connecté
       responses:
         '200':
@@ -89,6 +95,7 @@ paths:
   /auth/password:
     patch:
       tags: [Authentification]
+      operationId: changePassword
       summary: Modifier son mot de passe
       description: Change le mot de passe de l'utilisateur connecté. L'ancien mot de passe est exigé.
       requestBody:
@@ -108,6 +115,7 @@ paths:
   /users:
     get:
       tags: [Utilisateurs]
+      operationId: listUsers
       summary: Lister les utilisateurs
       description: Réservé aux administrateurs.
       parameters:
@@ -115,6 +123,8 @@ paths:
         - $ref: '#/components/parameters/PageSize'
         - name: role
           in: query
+          description: Filtre les utilisateurs par rôle.
+          required: false
           schema:
             $ref: '#/components/schemas/UserRole'
       responses:
@@ -124,13 +134,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedUsers'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
 
   /users/{userId}:
     get:
       tags: [Utilisateurs]
+      operationId: getUser
       summary: Consulter un utilisateur
+      description: Réservé à l'utilisateur concerné ou à un administrateur.
       parameters:
         - $ref: '#/components/parameters/UserId'
       responses:
@@ -140,11 +154,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
     patch:
       tags: [Utilisateurs]
+      operationId: updateUser
       summary: Modifier un utilisateur
+      description: |
+        Réservé à l'utilisateur concerné ou à un administrateur.
+        Le champ role ne peut être modifié que par un administrateur.
       parameters:
         - $ref: '#/components/parameters/UserId'
       requestBody:
@@ -160,18 +180,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
       tags: [Utilisateurs]
+      operationId: deleteUser
       summary: Supprimer un utilisateur
+      description: Réservé aux administrateurs.
       parameters:
         - $ref: '#/components/parameters/UserId'
       responses:
         '204':
           description: Utilisateur supprimé
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -180,7 +208,11 @@ paths:
   /rooms:
     get:
       tags: [Salles]
+      operationId: listRooms
       summary: Rechercher et lister les salles
+      description: |
+        Filtres de capacité : capacityMin doit être inférieur ou égal à capacityMax.
+        startTime et endTime ne s'appliquent qu'avec `date`.
       security: []
       parameters:
         - name: search
@@ -240,8 +272,6 @@ paths:
                 $ref: '#/components/schemas/PaginatedRooms'
         '400':
           $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
         '406':
           $ref: '#/components/responses/NotAcceptable'
         '429':
@@ -249,8 +279,11 @@ paths:
 
     post:
       tags: [Salles]
+      operationId: createRoom
       summary: Ajouter une salle
-      description: Réservé aux propriétaires/gestionnaires et administrateurs.
+      description: |
+        Réservé aux propriétaires/gestionnaires et administrateurs.
+        Le statut initial de la salle est ACTIVE.
       requestBody:
         required: true
         content:
@@ -274,6 +307,7 @@ paths:
   /rooms/{roomId}:
     get:
       tags: [Salles]
+      operationId: getRoom
       summary: Consulter les détails d'une salle
       security: []
       parameters:
@@ -296,6 +330,7 @@ paths:
 
     patch:
       tags: [Salles]
+      operationId: updateRoom
       summary: Modifier une salle
       description: |
         Réservé au gestionnaire propriétaire de la salle et aux administrateurs.
@@ -326,6 +361,7 @@ paths:
 
     delete:
       tags: [Salles]
+      operationId: deleteRoom
       summary: Supprimer une salle
       description: Réservé au gestionnaire propriétaire de la salle et aux administrateurs.
       parameters:
@@ -347,7 +383,11 @@ paths:
       - $ref: '#/components/parameters/RoomId'
     get:
       tags: [Disponibilités]
+      operationId: getRoomAvailability
       summary: Consulter les disponibilités d'une salle
+      description: |
+        Renvoie les créneaux de la date demandée. Le champ `available` indique si
+        le créneau est libre. Les paramètres startTime et endTime bornent la plage.
       security: []
       parameters:
         - name: date
@@ -366,7 +406,7 @@ paths:
             $ref: '#/components/schemas/TimeOfDay'
       responses:
         '200':
-          description: Créneaux disponibles
+          description: Créneaux de la date (libres et occupés)
           content:
             application/json:
               schema:
@@ -385,6 +425,7 @@ paths:
 
     put:
       tags: [Disponibilités]
+      operationId: setRoomAvailability
       summary: Définir les disponibilités d'une salle
       description: |
         Réservé au gestionnaire propriétaire de la salle et aux administrateurs.
@@ -412,10 +453,13 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
 
   /reservations:
     get:
       tags: [Réservations]
+      operationId: listReservations
       summary: Consulter ses réservations
       description: |
         Renvoie uniquement les réservations de l'utilisateur connecté, y compris
@@ -454,6 +498,7 @@ paths:
 
     post:
       tags: [Réservations]
+      operationId: createReservation
       summary: Réserver une salle
       description: |
         Vérifie la disponibilité avant de créer la réservation.
@@ -486,7 +531,9 @@ paths:
   /reservations/{reservationId}:
     get:
       tags: [Réservations]
+      operationId: getReservation
       summary: Consulter une réservation
+      description: Réservé au client propriétaire, au gestionnaire de la salle ou à un administrateur.
       parameters:
         - $ref: '#/components/parameters/ReservationId'
       responses:
@@ -505,6 +552,7 @@ paths:
 
     patch:
       tags: [Réservations]
+      operationId: updateReservation
       summary: Modifier une réservation
       description: |
         Seules les réservations PENDING ou CONFIRMED peuvent être modifiées (sinon 409).
@@ -541,6 +589,7 @@ paths:
 
     delete:
       tags: [Réservations]
+      operationId: cancelReservation
       summary: Annuler une réservation
       description: |
         Annulation logique : la réservation n'est pas supprimée, elle passe au
@@ -563,6 +612,7 @@ paths:
   /reservations/{reservationId}/confirm:
     post:
       tags: [Réservations]
+      operationId: confirmReservation
       summary: Confirmer une réservation
       description: |
         Utilisé par le gestionnaire de la salle ou un administrateur lorsque la validation est requise.
@@ -596,6 +646,7 @@ paths:
   /reservations/{reservationId}/reject:
     post:
       tags: [Réservations]
+      operationId: rejectReservation
       summary: Refuser une réservation
       description: |
         Utilisé par le gestionnaire de la salle ou un administrateur.
@@ -635,8 +686,11 @@ paths:
   /payments:
     post:
       tags: [Paiement]
+      operationId: createPayment
       summary: Initier le paiement d'une réservation
-      description: Réservé au client auteur de la réservation.
+      description: |
+        Réservé au client auteur de la réservation.
+        Renvoie 409 si la réservation est déjà payée.
       requestBody:
         required: true
         content:
@@ -664,7 +718,9 @@ paths:
   /payments/{paymentId}:
     get:
       tags: [Paiement]
+      operationId: getPayment
       summary: Consulter le statut d'un paiement
+      description: Réservé au client auteur de la réservation liée ou à un administrateur.
       parameters:
         - $ref: '#/components/parameters/PaymentId'
       responses:
@@ -684,6 +740,7 @@ paths:
   /admin/reservations:
     get:
       tags: [Administration]
+      operationId: listAdminReservations
       summary: Gérer toutes les réservations
       description: Réservé aux administrateurs.
       parameters:
@@ -710,12 +767,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedReservations'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
 
   /admin/statistics:
     get:
       tags: [Administration]
+      operationId: getAdminStatistics
       summary: Consulter les statistiques
       description: Réservé aux administrateurs.
       parameters:
@@ -736,6 +798,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Statistics'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
 
@@ -889,11 +955,14 @@ components:
       properties:
         firstName:
           type: string
+          maxLength: 100
         lastName:
           type: string
+          maxLength: 100
         email:
           type: string
           format: email
+          maxLength: 254
         password:
           type: string
           format: password
@@ -920,6 +989,8 @@ components:
           type: string
         expiresIn:
           type: integer
+          minimum: 1
+          description: Durée de validité du jeton d'accès, en secondes.
           example: 3600
         user:
           $ref: '#/components/schemas/User'
@@ -938,16 +1009,24 @@ components:
 
     UserUpdateRequest:
       type: object
+      minProperties: 1
       properties:
         firstName:
           type: string
+          maxLength: 100
         lastName:
           type: string
+          maxLength: 100
         email:
           type: string
           format: email
+          maxLength: 254
         role:
           $ref: '#/components/schemas/UserRole'
+
+    RoomStatus:
+      type: string
+      enum: [ACTIVE, INACTIVE]
 
     Room:
       type: object
@@ -979,8 +1058,7 @@ components:
           minimum: 0
           example: 35.00
         status:
-          type: string
-          enum: [ACTIVE, INACTIVE]
+          $ref: '#/components/schemas/RoomStatus'
         ownerId:
           type: string
           format: uuid
@@ -1041,8 +1119,7 @@ components:
           type: string
           format: uri
         status:
-          type: string
-          enum: [ACTIVE, INACTIVE]
+          $ref: '#/components/schemas/RoomStatus'
 
     TimeOfDay:
       description: Heure locale au format HH:mm
@@ -1070,8 +1147,15 @@ components:
           format: date
         slots:
           type: array
+          description: Créneaux de la journée. Pour chaque créneau, startTime doit être strictement antérieur à endTime.
           items:
             $ref: '#/components/schemas/AvailabilitySlot'
+
+    Currency:
+      type: string
+      description: Code devise ISO 4217 sur 3 lettres.
+      pattern: ^[A-Z]{3}$
+      example: EUR
 
     ReservationStatus:
       type: string
@@ -1096,6 +1180,7 @@ components:
         - endAt
         - status
         - totalAmount
+        - currency
       properties:
         id:
           type: string
@@ -1124,8 +1209,7 @@ components:
           format: double
           minimum: 0
         currency:
-          type: string
-          example: EUR
+          $ref: '#/components/schemas/Currency'
         createdAt:
           type: string
           format: date-time
@@ -1184,9 +1268,9 @@ components:
         amount:
           type: number
           format: double
+          minimum: 0
         currency:
-          type: string
-          example: EUR
+          $ref: '#/components/schemas/Currency'
         status:
           type: string
           enum: [PENDING, PAID, FAILED, REFUNDED]
@@ -1210,68 +1294,79 @@ components:
 
     Statistics:
       type: object
+      required: [totalUsers, totalRooms, totalReservations, confirmedReservations, cancelledReservations, totalRevenue]
       properties:
         totalUsers:
           type: integer
+          minimum: 0
         totalRooms:
           type: integer
+          minimum: 0
         totalReservations:
           type: integer
+          minimum: 0
         confirmedReservations:
           type: integer
+          minimum: 0
         cancelledReservations:
           type: integer
+          minimum: 0
         totalRevenue:
           type: number
           format: double
+          minimum: 0
+
+    PageMeta:
+      type: object
+      required: [page, pageSize, total]
+      properties:
+        page:
+          type: integer
+          minimum: 1
+        pageSize:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
 
     PaginatedUsers:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
-        page:
-          type: integer
-        pageSize:
-          type: integer
-        total:
-          type: integer
+      allOf:
+        - $ref: '#/components/schemas/PageMeta'
+        - type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/User'
 
     PaginatedRooms:
-      type: object
-      required: [items, page, pageSize, total]
-      properties:
-        items:
-          type: array
-          maxItems: 100
-          items:
-            $ref: '#/components/schemas/Room'
-        page:
-          type: integer
-        pageSize:
-          type: integer
-        total:
-          type: integer
+      allOf:
+        - $ref: '#/components/schemas/PageMeta'
+        - type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              maxItems: 100
+              items:
+                $ref: '#/components/schemas/Room'
 
     PaginatedReservations:
-      type: object
-      required: [items, page, pageSize, total]
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/Reservation'
-        page:
-          type: integer
-        pageSize:
-          type: integer
-        total:
-          type: integer
+      allOf:
+        - $ref: '#/components/schemas/PageMeta'
+        - type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/Reservation'
 
     Error:
       type: object
+      required: [code, message]
       properties:
         code:
           type: string
