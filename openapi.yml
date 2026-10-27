@@ -77,6 +77,18 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
+  /auth/logout:
+    post:
+      tags: [Authentification]
+      operationId: logoutUser
+      summary: Se déconnecter
+      description: Révoque le jeton de l'utilisateur connecté, qui ne peut plus être utilisé.
+      responses:
+        '204':
+          description: Déconnexion effectuée
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
   /auth/me:
     get:
       tags: [Authentification]
@@ -555,6 +567,7 @@ paths:
       operationId: updateReservation
       summary: Modifier une réservation
       description: |
+        Réservé au client propriétaire, au gestionnaire de la salle ou à un administrateur.
         Seules les réservations PENDING ou CONFIRMED peuvent être modifiées (sinon 409).
         Une modification du créneau d'une réservation CONFIRMED la repasse à PENDING.
       parameters:
@@ -592,6 +605,7 @@ paths:
       operationId: cancelReservation
       summary: Annuler une réservation
       description: |
+        Réservé au client propriétaire, au gestionnaire de la salle ou à un administrateur.
         Annulation logique : la réservation n'est pas supprimée, elle passe au
         statut CANCELLED et reste consultable. Seules les réservations PENDING ou
         CONFIRMED peuvent être annulées (sinon 409).
@@ -742,7 +756,11 @@ paths:
       tags: [Administration]
       operationId: listAdminReservations
       summary: Gérer toutes les réservations
-      description: Réservé aux administrateurs.
+      description: |
+        Réservé aux administrateurs. Liste toutes les réservations, tous clients et
+        salles confondus. La gestion d'une réservation passe par les routes
+        `/reservations/{reservationId}` (PATCH, DELETE, `/confirm`, `/reject`),
+        ouvertes aux administrateurs sur toute réservation.
       parameters:
         - name: status
           in: query
