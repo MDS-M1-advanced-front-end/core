@@ -233,6 +233,11 @@ export const zLoginUserBody = zLoginRequest;
 export const zLoginUserResponse = zAuthResponse;
 
 /**
+ * Déconnexion effectuée
+ */
+export const zLogoutUserResponse = z.void();
+
+/**
  * Profil utilisateur
  */
 export const zGetCurrentUserResponse = zUser;

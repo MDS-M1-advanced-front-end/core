@@ -271,6 +271,31 @@ export type LoginUserResponses = {
 
 export type LoginUserResponse = LoginUserResponses[keyof LoginUserResponses];
 
+export type LogoutUserData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/logout';
+};
+
+export type LogoutUserErrors = {
+    /**
+     * Authentification requise ou invalide
+     */
+    401: Error;
+};
+
+export type LogoutUserError = LogoutUserErrors[keyof LogoutUserErrors];
+
+export type LogoutUserResponses = {
+    /**
+     * Déconnexion effectuée
+     */
+    204: void;
+};
+
+export type LogoutUserResponse = LogoutUserResponses[keyof LogoutUserResponses];
+
 export type GetCurrentUserData = {
     body?: never;
     path?: never;
