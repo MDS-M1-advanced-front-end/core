@@ -50,6 +50,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '409':
           description: Adresse e-mail déjà utilisée
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
 
   /auth/login:
     post:
@@ -71,6 +73,8 @@ paths:
                 $ref: '#/components/schemas/AuthResponse'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
 
   /auth/refresh:
     post:
@@ -98,6 +102,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
 
   /auth/me:
     get:
@@ -836,6 +842,18 @@ components:
 
     Conflict:
       description: Conflit avec l'état actuel de la ressource (créneau indisponible, statut incompatible)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    TooManyRequests:
+      description: Trop de requêtes depuis cette adresse IP (5 par minute sur les routes d'authentification)
+      headers:
+        Retry-After:
+          description: Secondes à attendre avant de réessayer
+          schema:
+            type: integer
       content:
         application/json:
           schema:

@@ -44,6 +44,7 @@ export interface paths {
                     };
                     content?: never;
                 };
+                429: components["responses"]["TooManyRequests"];
             };
         };
         delete?: never;
@@ -85,6 +86,7 @@ export interface paths {
                     };
                 };
                 401: components["responses"]["Unauthorized"];
+                429: components["responses"]["TooManyRequests"];
             };
         };
         delete?: never;
@@ -132,6 +134,7 @@ export interface paths {
                 };
                 400: components["responses"]["BadRequest"];
                 401: components["responses"]["Unauthorized"];
+                429: components["responses"]["TooManyRequests"];
             };
         };
         delete?: never;
@@ -1377,6 +1380,17 @@ export interface components {
         /** @description Conflit avec l'état actuel de la ressource (créneau indisponible, statut incompatible) */
         Conflict: {
             headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["Error"];
+            };
+        };
+        /** @description Trop de requêtes depuis cette adresse IP (5 par minute sur les routes d'authentification) */
+        TooManyRequests: {
+            headers: {
+                /** @description Secondes à attendre avant de réessayer */
+                "Retry-After"?: number;
                 [name: string]: unknown;
             };
             content: {
