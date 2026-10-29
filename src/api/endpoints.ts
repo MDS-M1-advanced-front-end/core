@@ -15,6 +15,7 @@ import type {
   LoginRequest,
   RefreshRequest,
   ChangePasswordRequest,
+  ProfileUpdateRequest,
   UserUpdateRequest,
   RoomCreateRequest,
   RoomUpdateRequest,
@@ -77,6 +78,15 @@ export function logout(): void {
  */
 export function getMe(): Promise<Result<User>> {
   return request(apiClient.GET('/auth/me'));
+}
+
+/**
+ * Modifie le profil de l'utilisateur connecté (modification partielle, sans le rôle).
+ * @param body - Champs à modifier : `firstName`, `lastName`, `email`.
+ * @returns L'utilisateur modifié. Erreur 409 si l'e-mail est déjà utilisé.
+ */
+export function updateMe(body: ProfileUpdateRequest): Promise<Result<User>> {
+  return request(apiClient.PATCH('/auth/me', { body }));
 }
 
 /**

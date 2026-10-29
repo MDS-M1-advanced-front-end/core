@@ -177,7 +177,44 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        patch?: never;
+        /**
+         * Modifier son profil
+         * @description Modification partielle du profil de l'utilisateur connecté : seuls les champs envoyés
+         *     sont modifiés. Le rôle ne se modifie pas ici (`PATCH /users/{userId}`, administrateurs).
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProfileUpdateRequest"];
+                };
+            };
+            responses: {
+                /** @description Profil modifié */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["User"];
+                    };
+                };
+                400: components["responses"]["BadRequest"];
+                401: components["responses"]["Unauthorized"];
+                /** @description Adresse e-mail déjà utilisée */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         trace?: never;
     };
     "/auth/password": {
@@ -1156,6 +1193,12 @@ export interface components {
             currentPassword: string;
             /** Format: password */
             newPassword: string;
+        };
+        ProfileUpdateRequest: {
+            firstName?: string;
+            lastName?: string;
+            /** Format: email */
+            email?: string;
         };
         UserUpdateRequest: {
             firstName?: string;
