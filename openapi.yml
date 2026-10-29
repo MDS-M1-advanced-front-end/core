@@ -1073,6 +1073,8 @@ components:
           type: string
         description:
           type: string
+          nullable: true
+          description: null efface la description
         capacity:
           type: integer
           minimum: 1
@@ -1089,6 +1091,8 @@ components:
         imageUrl:
           type: string
           format: uri
+          nullable: true
+          description: null retire la photo
         status:
           type: string
           enum: [ACTIVE, INACTIVE]

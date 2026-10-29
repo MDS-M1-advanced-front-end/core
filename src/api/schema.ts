@@ -1252,14 +1252,18 @@ export interface components {
         };
         RoomUpdateRequest: {
             name?: string;
-            description?: string;
+            /** @description null efface la description */
+            description?: string | null;
             capacity?: number;
             location?: string;
             equipment?: string[];
             /** Format: double */
             pricePerHour?: number;
-            /** Format: uri */
-            imageUrl?: string;
+            /**
+             * Format: uri
+             * @description null retire la photo
+             */
+            imageUrl?: string | null;
             /** @enum {string} */
             status?: "ACTIVE" | "INACTIVE";
         };
