@@ -72,6 +72,33 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
+  /auth/refresh:
+    post:
+      tags: [Authentification]
+      summary: Renouveler les jetons
+      description: |
+        Échange un jeton de rafraîchissement (remis par `POST /auth/login`) contre un nouveau
+        jeton d'accès et un nouveau jeton de rafraîchissement. Route publique : le jeton d'accès
+        est en général expiré quand on l'appelle.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: Jetons renouvelés
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
   /auth/me:
     get:
       tags: [Authentification]
@@ -869,6 +896,13 @@ components:
         password:
           type: string
           format: password
+
+    RefreshRequest:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
 
     AuthResponse:
       type: object

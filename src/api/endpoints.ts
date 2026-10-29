@@ -13,6 +13,7 @@ import type {
   PaginatedReservations,
   RegisterRequest,
   LoginRequest,
+  RefreshRequest,
   ChangePasswordRequest,
   UserUpdateRequest,
   RoomCreateRequest,
@@ -48,6 +49,17 @@ export function register(body: RegisterRequest): Promise<Result<User>> {
  */
 export async function login(body: LoginRequest): Promise<Result<AuthResponse>> {
   const result = await request(apiClient.POST('/auth/login', { body }));
+  if (result.ok) setAccessToken(result.data.accessToken);
+  return result;
+}
+
+/**
+ * Renouvelle les jetons et enregistre le nouvel access token pour les appels suivants. Route publique.
+ * @param body - Jeton de rafraîchissement remis par `login` (ou par un appel précédent à `refresh`).
+ * @returns Les nouveaux jetons et l'utilisateur. Erreur 401 si le jeton est invalide ou expiré.
+ */
+export async function refresh(body: RefreshRequest): Promise<Result<AuthResponse>> {
+  const result = await request(apiClient.POST('/auth/refresh', { body }));
   if (result.ok) setAccessToken(result.data.accessToken);
   return result;
 }
