@@ -1,0 +1,160 @@
+# Contrat GraphQL de l'administration : POST /api/graphql, réservé aux administrateurs.
+# Lecture seule, pour les tableaux de bord. Il complète l'API REST (openapi.yml) sans la remplacer :
+# les écritures et les écrans courants restent en REST.
+#
+# Toutes les statistiques portent sur la date de début des réservations, en heure de Paris.
+# Chiffre d'affaires : réservations CONFIRMED et COMPLETED (montant figé à la création), en EUR.
+#
+# Erreurs : `errors[].extensions` reprend le schéma Error du contrat REST (`code`, `details`),
+# avec en plus `status`, le statut HTTP qu'aurait renvoyé la même erreur en REST.
+
+"""
+Date de Paris, au format YYYY-MM-DD.
+"""
+scalar Date
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  REJECTED
+  CANCELLED
+  COMPLETED
+}
+
+enum RoomStatus {
+  ACTIVE
+  INACTIVE
+}
+
+"""
+Pas de temps d'une série : jour, semaine (commence le lundi) ou mois.
+"""
+enum Granularity {
+  DAY
+  WEEK
+  MONTH
+}
+
+"""
+Critère de classement des salles.
+"""
+enum RoomSort {
+  REVENUE
+  RESERVATIONS
+  BOOKED_HOURS
+}
+
+enum SortDirection {
+  ASC
+  DESC
+}
+
+"""
+Période sur la date de début des réservations, bornes incluses. Une borne absente n'est pas appliquée.
+"""
+input PeriodInput {
+  from: Date
+  to: Date
+}
+
+type Query {
+  """
+  Tableau de bord sur une période (toutes les réservations si elle est absente).
+  Seuls les champs demandés sont calculés.
+  """
+  dashboard(period: PeriodInput): Dashboard!
+}
+
+type Dashboard {
+  """
+  Début de la période demandée, ou null.
+  """
+  from: Date
+  """
+  Fin de la période demandée, ou null.
+  """
+  to: Date
+  """
+  Compteurs globaux, identiques à GET /admin/statistics. Utilisateurs et salles : sans tenir compte de la période.
+  """
+  statistics: Statistics!
+  """
+  Nombre de réservations et montant par statut. Tous les statuts sont présents, à 0 au besoin.
+  """
+  byStatus: [StatusBreakdown!]!
+  """
+  Série chronologique. Seuls les intervalles qui ont au moins une réservation sont présents.
+  """
+  timeline(granularity: Granularity! = DAY): [TimelinePoint!]!
+  """
+  Classement des salles, y compris celles sans réservation sur la période. limit : 1 à 50.
+  """
+  rooms(
+    sort: RoomSort! = REVENUE
+    direction: SortDirection! = DESC
+    limit: Int! = 10
+  ): [RoomPerformance!]!
+  """
+  Clients classés par chiffre d'affaires (au moins une réservation sur la période). limit : 1 à 50.
+  """
+  topClients(limit: Int! = 10): [ClientPerformance!]!
+}
+
+type Statistics {
+  totalUsers: Int!
+  totalRooms: Int!
+  totalReservations: Int!
+  confirmedReservations: Int!
+  cancelledReservations: Int!
+  totalRevenue: Float!
+}
+
+type StatusBreakdown {
+  status: ReservationStatus!
+  count: Int!
+  amount: Float!
+}
+
+type TimelinePoint {
+  """
+  Premier jour de l'intervalle.
+  """
+  date: Date!
+  reservations: Int!
+  confirmedReservations: Int!
+  revenue: Float!
+}
+
+type RoomSummary {
+  id: ID!
+  name: String!
+  location: String!
+  capacity: Int!
+  pricePerHour: Float!
+  status: RoomStatus!
+}
+
+type RoomPerformance {
+  room: RoomSummary!
+  reservations: Int!
+  confirmedReservations: Int!
+  revenue: Float!
+  """
+  Heures réservées (réservations confirmées).
+  """
+  bookedHours: Float!
+}
+
+type UserSummary {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  email: String!
+}
+
+type ClientPerformance {
+  user: UserSummary!
+  reservations: Int!
+  confirmedReservations: Int!
+  revenue: Float!
+}

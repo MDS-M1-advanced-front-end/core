@@ -2,7 +2,8 @@ import createClient, { type Middleware } from 'openapi-fetch';
 import type { paths } from './schema';
 import type { ApiError, Result } from './result';
 
-const baseUrl = process.env.API_BASE_URL ?? 'http://localhost:8080/api';
+/** URL de base de l'API (préfixe `/api` compris), partagée avec le client GraphQL. */
+export const baseUrl = process.env.API_BASE_URL ?? 'http://localhost:8080/api';
 
 let accessToken: string | null = null;
 

@@ -1,3 +1,5 @@
 pnpm-lock.yaml
 openapi.yml
 src/api/schema.ts
+src/graphql/schema.ts
+src/graphql/operations.generated.ts
