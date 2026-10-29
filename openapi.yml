@@ -50,6 +50,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '409':
           description: Adresse e-mail déjà utilisée
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
 
   /auth/login:
     post:
@@ -71,6 +73,37 @@ paths:
                 $ref: '#/components/schemas/AuthResponse'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /auth/refresh:
+    post:
+      tags: [Authentification]
+      summary: Renouveler les jetons
+      description: |
+        Échange un jeton de rafraîchissement (remis par `POST /auth/login`) contre un nouveau
+        jeton d'accès et un nouveau jeton de rafraîchissement. Route publique : le jeton d'accès
+        est en général expiré quand on l'appelle.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: Jetons renouvelés
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
 
   /auth/me:
     get:
@@ -85,6 +118,31 @@ paths:
                 $ref: '#/components/schemas/User'
         '401':
           $ref: '#/components/responses/Unauthorized'
+    patch:
+      tags: [Authentification]
+      summary: Modifier son profil
+      description: |
+        Modification partielle du profil de l'utilisateur connecté : seuls les champs envoyés
+        sont modifiés. Le rôle ne se modifie pas ici (`PATCH /users/{userId}`, administrateurs).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileUpdateRequest'
+      responses:
+        '200':
+          description: Profil modifié
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          description: Adresse e-mail déjà utilisée
 
   /auth/password:
     patch:
@@ -814,6 +872,18 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
 
+    TooManyRequests:
+      description: Trop de requêtes depuis cette adresse IP (5 par minute sur les routes d'authentification)
+      headers:
+        Retry-After:
+          description: Secondes à attendre avant de réessayer
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
   schemas:
 
     UserRole:
@@ -870,6 +940,13 @@ components:
           type: string
           format: password
 
+    RefreshRequest:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
+
     AuthResponse:
       type: object
       required: [accessToken, user]
@@ -895,6 +972,18 @@ components:
           type: string
           format: password
           minLength: 8
+
+    ProfileUpdateRequest:
+      type: object
+      minProperties: 1
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
 
     UserUpdateRequest:
       type: object
@@ -984,6 +1073,8 @@ components:
           type: string
         description:
           type: string
+          nullable: true
+          description: null efface la description
         capacity:
           type: integer
           minimum: 1
@@ -1000,6 +1091,8 @@ components:
         imageUrl:
           type: string
           format: uri
+          nullable: true
+          description: null retire la photo
         status:
           type: string
           enum: [ACTIVE, INACTIVE]

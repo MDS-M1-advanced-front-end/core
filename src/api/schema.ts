@@ -44,6 +44,7 @@ export interface paths {
                     };
                     content?: never;
                 };
+                429: components["responses"]["TooManyRequests"];
             };
         };
         delete?: never;
@@ -85,6 +86,55 @@ export interface paths {
                     };
                 };
                 401: components["responses"]["Unauthorized"];
+                429: components["responses"]["TooManyRequests"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Renouveler les jetons
+         * @description Échange un jeton de rafraîchissement (remis par `POST /auth/login`) contre un nouveau
+         *     jeton d'accès et un nouveau jeton de rafraîchissement. Route publique : le jeton d'accès
+         *     est en général expiré quand on l'appelle.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["RefreshRequest"];
+                };
+            };
+            responses: {
+                /** @description Jetons renouvelés */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AuthResponse"];
+                    };
+                };
+                400: components["responses"]["BadRequest"];
+                401: components["responses"]["Unauthorized"];
+                429: components["responses"]["TooManyRequests"];
             };
         };
         delete?: never;
@@ -127,7 +177,44 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        patch?: never;
+        /**
+         * Modifier son profil
+         * @description Modification partielle du profil de l'utilisateur connecté : seuls les champs envoyés
+         *     sont modifiés. Le rôle ne se modifie pas ici (`PATCH /users/{userId}`, administrateurs).
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProfileUpdateRequest"];
+                };
+            };
+            responses: {
+                /** @description Profil modifié */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["User"];
+                    };
+                };
+                400: components["responses"]["BadRequest"];
+                401: components["responses"]["Unauthorized"];
+                /** @description Adresse e-mail déjà utilisée */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         trace?: never;
     };
     "/auth/password": {
@@ -1091,6 +1178,9 @@ export interface components {
             /** Format: password */
             password: string;
         };
+        RefreshRequest: {
+            refreshToken: string;
+        };
         AuthResponse: {
             accessToken: string;
             refreshToken?: string;
@@ -1103,6 +1193,12 @@ export interface components {
             currentPassword: string;
             /** Format: password */
             newPassword: string;
+        };
+        ProfileUpdateRequest: {
+            firstName?: string;
+            lastName?: string;
+            /** Format: email */
+            email?: string;
         };
         UserUpdateRequest: {
             firstName?: string;
@@ -1156,14 +1252,18 @@ export interface components {
         };
         RoomUpdateRequest: {
             name?: string;
-            description?: string;
+            /** @description null efface la description */
+            description?: string | null;
             capacity?: number;
             location?: string;
             equipment?: string[];
             /** Format: double */
             pricePerHour?: number;
-            /** Format: uri */
-            imageUrl?: string;
+            /**
+             * Format: uri
+             * @description null retire la photo
+             */
+            imageUrl?: string | null;
             /** @enum {string} */
             status?: "ACTIVE" | "INACTIVE";
         };
@@ -1327,6 +1427,17 @@ export interface components {
         /** @description Conflit avec l'état actuel de la ressource (créneau indisponible, statut incompatible) */
         Conflict: {
             headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["Error"];
+            };
+        };
+        /** @description Trop de requêtes depuis cette adresse IP (5 par minute sur les routes d'authentification) */
+        TooManyRequests: {
+            headers: {
+                /** @description Secondes à attendre avant de réessayer */
+                "Retry-After"?: number;
                 [name: string]: unknown;
             };
             content: {
