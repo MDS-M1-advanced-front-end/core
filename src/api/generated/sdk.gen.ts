@@ -346,8 +346,8 @@ export const listReservations = <ThrowOnError extends boolean = false>(options?:
  * Réserver une salle
  *
  * Vérifie la disponibilité avant de créer la réservation.
- * La réservation est créée au statut PENDING, puis passe à CONFIRMED ou
- * REJECTED via `/confirm` ou `/reject`. `startAt` doit être strictement
+ * La réservation est créée au statut PENDING_PAYMENT, puis passe à CONFIRMED ou
+ * REFUSED via `/confirm` ou `/reject`. `startAt` doit être strictement
  * antérieur à `endAt`, et `numberOfParticipants` ne doit pas dépasser la
  * capacité de la salle (sinon 400).
  *
@@ -373,7 +373,7 @@ export const createReservation = <ThrowOnError extends boolean = false>(options:
  *
  * Réservé au client propriétaire, au gestionnaire de la salle ou à un administrateur.
  * Annulation logique : la réservation n'est pas supprimée, elle passe au
- * statut CANCELLED et reste consultable. Seules les réservations PENDING ou
+ * statut CANCELLED et reste consultable. Seules les réservations PENDING_PAYMENT ou
  * CONFIRMED peuvent être annulées (sinon 409).
  *
  */
@@ -410,8 +410,8 @@ export const getReservation = <ThrowOnError extends boolean = false>(options: Op
  * Modifier une réservation
  *
  * Réservé au client propriétaire, au gestionnaire de la salle ou à un administrateur.
- * Seules les réservations PENDING ou CONFIRMED peuvent être modifiées (sinon 409).
- * Une modification du créneau d'une réservation CONFIRMED la repasse à PENDING.
+ * Seules les réservations PENDING_PAYMENT ou CONFIRMED peuvent être modifiées (sinon 409).
+ * Le changement de créneau d'une réservation CONFIRMED est refusé (sinon 409).
  *
  */
 export const updateReservation = <ThrowOnError extends boolean = false>(options: Options<UpdateReservationData, ThrowOnError>): RequestResult<UpdateReservationResponses, UpdateReservationErrors, ThrowOnError> => (options.client ?? client).patch<UpdateReservationResponses, UpdateReservationErrors, ThrowOnError>({
@@ -434,7 +434,7 @@ export const updateReservation = <ThrowOnError extends boolean = false>(options:
  * Confirmer une réservation
  *
  * Utilisé par le gestionnaire de la salle ou un administrateur lorsque la validation est requise.
- * Seule une réservation au statut PENDING peut être confirmée (sinon 409).
+ * Seule une réservation au statut PENDING_PAYMENT peut être confirmée (sinon 409).
  *
  */
 export const confirmReservation = <ThrowOnError extends boolean = false>(options: Options<ConfirmReservationData, ThrowOnError>): RequestResult<ConfirmReservationResponses, ConfirmReservationErrors, ThrowOnError> => (options.client ?? client).post<ConfirmReservationResponses, ConfirmReservationErrors, ThrowOnError>({
@@ -453,7 +453,7 @@ export const confirmReservation = <ThrowOnError extends boolean = false>(options
  * Refuser une réservation
  *
  * Utilisé par le gestionnaire de la salle ou un administrateur.
- * Seule une réservation au statut PENDING peut être refusée (sinon 409).
+ * Seule une réservation au statut PENDING_PAYMENT peut être refusée (sinon 409).
  *
  */
 export const rejectReservation = <ThrowOnError extends boolean = false>(options: Options<RejectReservationData, ThrowOnError>): RequestResult<RejectReservationResponses, RejectReservationErrors, ThrowOnError> => (options.client ?? client).post<RejectReservationResponses, RejectReservationErrors, ThrowOnError>({

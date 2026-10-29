@@ -107,15 +107,16 @@ export const zAvailabilityUpdateRequest = z.object({
 export const zCurrency = z.string().regex(/^[A-Z]{3}$/);
 
 /**
- * Cycle de vie : PENDING à la création, puis CONFIRMED ou REJECTED (gestionnaire/admin).
- * PENDING ou CONFIRMED peut passer à CANCELLED (annulation).
+ * Cycle de vie : PENDING_PAYMENT à la création, puis CONFIRMED ou REFUSED (gestionnaire/admin).
+ * PENDING_PAYMENT ou CONFIRMED peut passer à CANCELLED (annulation).
  * CONFIRMED passe à COMPLETED automatiquement une fois `endAt` dépassé.
+ * CANCELLED, REFUSED et COMPLETED sont des états finaux.
  *
  */
 export const zReservationStatus = z.enum([
-    'PENDING',
+    'PENDING_PAYMENT',
     'CONFIRMED',
-    'REJECTED',
+    'REFUSED',
     'CANCELLED',
     'COMPLETED'
 ]);

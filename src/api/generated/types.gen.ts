@@ -111,12 +111,13 @@ export type AvailabilityUpdateRequest = {
 export type Currency = string;
 
 /**
- * Cycle de vie : PENDING à la création, puis CONFIRMED ou REJECTED (gestionnaire/admin).
- * PENDING ou CONFIRMED peut passer à CANCELLED (annulation).
+ * Cycle de vie : PENDING_PAYMENT à la création, puis CONFIRMED ou REFUSED (gestionnaire/admin).
+ * PENDING_PAYMENT ou CONFIRMED peut passer à CANCELLED (annulation).
  * CONFIRMED passe à COMPLETED automatiquement une fois `endAt` dépassé.
+ * CANCELLED, REFUSED et COMPLETED sont des états finaux.
  *
  */
-export type ReservationStatus = 'PENDING' | 'CONFIRMED' | 'REJECTED' | 'CANCELLED' | 'COMPLETED';
+export type ReservationStatus = 'PENDING_PAYMENT' | 'CONFIRMED' | 'REFUSED' | 'CANCELLED' | 'COMPLETED';
 
 export type Reservation = {
     id: string;

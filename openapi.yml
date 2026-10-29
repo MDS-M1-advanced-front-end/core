@@ -514,8 +514,8 @@ paths:
       summary: Réserver une salle
       description: |
         Vérifie la disponibilité avant de créer la réservation.
-        La réservation est créée au statut PENDING, puis passe à CONFIRMED ou
-        REJECTED via `/confirm` ou `/reject`. `startAt` doit être strictement
+        La réservation est créée au statut PENDING_PAYMENT, puis passe à CONFIRMED ou
+        REFUSED via `/confirm` ou `/reject`. `startAt` doit être strictement
         antérieur à `endAt`, et `numberOfParticipants` ne doit pas dépasser la
         capacité de la salle (sinon 400).
       requestBody:
@@ -568,8 +568,8 @@ paths:
       summary: Modifier une réservation
       description: |
         Réservé au client propriétaire, au gestionnaire de la salle ou à un administrateur.
-        Seules les réservations PENDING ou CONFIRMED peuvent être modifiées (sinon 409).
-        Une modification du créneau d'une réservation CONFIRMED la repasse à PENDING.
+        Seules les réservations PENDING_PAYMENT ou CONFIRMED peuvent être modifiées (sinon 409).
+        Le changement de créneau d'une réservation CONFIRMED est refusé (sinon 409).
       parameters:
         - $ref: '#/components/parameters/ReservationId'
       requestBody:
@@ -607,7 +607,7 @@ paths:
       description: |
         Réservé au client propriétaire, au gestionnaire de la salle ou à un administrateur.
         Annulation logique : la réservation n'est pas supprimée, elle passe au
-        statut CANCELLED et reste consultable. Seules les réservations PENDING ou
+        statut CANCELLED et reste consultable. Seules les réservations PENDING_PAYMENT ou
         CONFIRMED peuvent être annulées (sinon 409).
       parameters:
         - $ref: '#/components/parameters/ReservationId'
@@ -630,7 +630,7 @@ paths:
       summary: Confirmer une réservation
       description: |
         Utilisé par le gestionnaire de la salle ou un administrateur lorsque la validation est requise.
-        Seule une réservation au statut PENDING peut être confirmée (sinon 409).
+        Seule une réservation au statut PENDING_PAYMENT peut être confirmée (sinon 409).
       parameters:
         - $ref: '#/components/parameters/ReservationId'
       responses:
@@ -664,7 +664,7 @@ paths:
       summary: Refuser une réservation
       description: |
         Utilisé par le gestionnaire de la salle ou un administrateur.
-        Seule une réservation au statut PENDING peut être refusée (sinon 409).
+        Seule une réservation au statut PENDING_PAYMENT peut être refusée (sinon 409).
       parameters:
         - $ref: '#/components/parameters/ReservationId'
       requestBody:
@@ -686,7 +686,7 @@ paths:
                 userId: 00000000-0000-4000-8000-200000000001
                 startAt: '2026-10-12T09:00:00Z'
                 endAt: '2026-10-12T12:00:00Z'
-                status: REJECTED
+                status: REFUSED
                 totalAmount: 135.0
         '401':
           $ref: '#/components/responses/Unauthorized'
@@ -1178,13 +1178,14 @@ components:
     ReservationStatus:
       type: string
       description: |
-        Cycle de vie : PENDING à la création, puis CONFIRMED ou REJECTED (gestionnaire/admin).
-        PENDING ou CONFIRMED peut passer à CANCELLED (annulation).
+        Cycle de vie : PENDING_PAYMENT à la création, puis CONFIRMED ou REFUSED (gestionnaire/admin).
+        PENDING_PAYMENT ou CONFIRMED peut passer à CANCELLED (annulation).
         CONFIRMED passe à COMPLETED automatiquement une fois `endAt` dépassé.
+        CANCELLED, REFUSED et COMPLETED sont des états finaux.
       enum:
-        - PENDING
+        - PENDING_PAYMENT
         - CONFIRMED
-        - REJECTED
+        - REFUSED
         - CANCELLED
         - COMPLETED
 
