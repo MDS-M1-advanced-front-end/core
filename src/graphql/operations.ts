@@ -1,6 +1,11 @@
 import { graphqlRequest } from './client';
 import type { Result } from '../api/result';
-import type { AdminDashboardQuery, AdminDashboardQueryVariables } from './operations.generated';
+import type {
+  AdminDashboardQuery,
+  AdminDashboardQueryVariables,
+  ReservationRequestsQuery,
+  ReservationRequestsQueryVariables,
+} from './operations.generated';
 
 // Requêtes prêtes à l'emploi. Le marqueur /* GraphQL */ permet à graphql-codegen de les lire et
 // d'en générer les types (pnpm generate:graphql). Pour un écran qui a besoin d'autres champs,
@@ -63,4 +68,50 @@ export function getAdminDashboard(
   variables: AdminDashboardQueryVariables,
 ): Promise<Result<AdminDashboardQuery>> {
   return graphqlRequest(ADMIN_DASHBOARD, variables);
+}
+
+const RESERVATION_REQUESTS = /* GraphQL */ `
+  query ReservationRequests($handledLimit: Int!) {
+    reservationRequests {
+      pending {
+        ...ReservationRequestFields
+      }
+      handled(limit: $handledLimit) {
+        ...ReservationRequestFields
+      }
+    }
+  }
+
+  fragment ReservationRequestFields on ReservationRequest {
+    id
+    room {
+      id
+      name
+    }
+    requester {
+      id
+      firstName
+      lastName
+    }
+    startAt
+    endAt
+    status
+    numberOfParticipants
+    comment
+    totalAmount
+    currency
+  }
+`;
+
+/**
+ * Demandes de réservation de l'écran « Demandes » : en attente et traitées récemment, avec le nom
+ * de la salle et du demandeur, en une seule requête. Réservé aux gestionnaires (leurs salles) et
+ * aux administrateurs (toutes les salles).
+ * @param variables - Nombre de demandes traitées (1 à 100).
+ * @returns Les deux listes. Erreur 401 sans jeton, 403 pour un client.
+ */
+export function getReservationRequests(
+  variables: ReservationRequestsQueryVariables,
+): Promise<Result<ReservationRequestsQuery>> {
+  return graphqlRequest(RESERVATION_REQUESTS, variables);
 }

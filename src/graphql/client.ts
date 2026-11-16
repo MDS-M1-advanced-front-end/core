@@ -1,7 +1,7 @@
 import { baseUrl, getAccessToken } from '../api/client';
 import type { ApiError, Result } from '../api/result';
 
-/** Point d'entrée GraphQL de l'administration. */
+/** Point d'entrée GraphQL du back-office. */
 const graphqlUrl = `${baseUrl}/graphql`;
 
 interface GraphQLErrorBody {
@@ -30,7 +30,7 @@ function toApiError(status: number, error: GraphQLErrorBody | undefined): ApiErr
 }
 
 /**
- * Exécute une requête GraphQL d'administration, avec le token d'accès courant.
+ * Exécute une requête GraphQL du back-office, avec le token d'accès courant.
  * Une réponse avec des `errors` est une erreur, même si une partie des données est présente :
  * un tableau de bord partiel serait trompeur.
  * @param query - Texte de la requête (voir `operations.ts` pour un exemple).

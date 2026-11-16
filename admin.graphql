@@ -1,6 +1,7 @@
-# Contrat GraphQL de l'administration : POST /api/graphql, réservé aux administrateurs.
-# Lecture seule, pour les tableaux de bord. Il complète l'API REST (openapi.yml) sans la remplacer :
-# les écritures et les écrans courants restent en REST.
+# Contrat GraphQL du back-office : POST /api/graphql. Lecture seule, pour les écrans qui croisent
+# plusieurs ressources : tableaux de bord (administrateurs) et demandes de réservation
+# (gestionnaires et administrateurs). Il complète l'API REST (openapi.yml) sans la remplacer :
+# les écritures et les autres écrans restent en REST.
 #
 # Toutes les statistiques portent sur la date de début des réservations, en heure de Paris.
 # Chiffre d'affaires : réservations CONFIRMED et COMPLETED (montant figé à la création), en EUR.
@@ -12,6 +13,11 @@
 Date de Paris, au format YYYY-MM-DD.
 """
 scalar Date
+
+"""
+Instant au format ISO 8601, en UTC (2026-10-20T14:00:00.000Z), comme les date-time du REST.
+"""
+scalar DateTime
 
 enum ReservationStatus {
   PENDING
@@ -63,6 +69,11 @@ type Query {
   Seuls les champs demandés sont calculés.
   """
   dashboard(period: PeriodInput): Dashboard!
+  """
+  Demandes de réservation sur les salles du gestionnaire connecté (administrateur : toutes les
+  salles), avec la salle et le demandeur. Réservé aux gestionnaires et aux administrateurs.
+  """
+  reservationRequests: ReservationRequests!
 }
 
 type Dashboard {
@@ -157,4 +168,34 @@ type ClientPerformance {
   reservations: Int!
   confirmedReservations: Int!
   revenue: Float!
+}
+
+type ReservationRequests {
+  """
+  Demandes en attente (PENDING), la plus proche d'abord. limit : 1 à 100.
+  """
+  pending(limit: Int! = 100): [ReservationRequest!]!
+  """
+  Demandes traitées (CONFIRMED, REJECTED, COMPLETED), la plus récente d'abord (date de début :
+  la date de traitement n'est pas enregistrée). limit : 1 à 100.
+  """
+  handled(limit: Int! = 10): [ReservationRequest!]!
+}
+
+"""
+Réservation vue par le gestionnaire de la salle : champs du schéma Reservation du REST, avec la
+salle et le demandeur à la place de roomId et userId.
+"""
+type ReservationRequest {
+  id: ID!
+  room: RoomSummary!
+  requester: UserSummary!
+  startAt: DateTime!
+  endAt: DateTime!
+  status: ReservationStatus!
+  numberOfParticipants: Int
+  comment: String
+  totalAmount: Float!
+  currency: String!
+  createdAt: DateTime!
 }

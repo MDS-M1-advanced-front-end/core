@@ -9,6 +9,8 @@ export type Scalars = {
   Float: { input: number; output: number; }
   /** Date de Paris, au format YYYY-MM-DD. */
   Date: { input: string; output: string; }
+  /** Instant au format ISO 8601, en UTC (2026-10-20T14:00:00.000Z), comme les date-time du REST. */
+  DateTime: { input: string; output: string; }
 };
 
 export type ClientPerformance = {
@@ -73,11 +75,56 @@ export type Query = {
    * Seuls les champs demandés sont calculés.
    */
   dashboard: Dashboard;
+  /**
+   * Demandes de réservation sur les salles du gestionnaire connecté (administrateur : toutes les
+   * salles), avec la salle et le demandeur. Réservé aux gestionnaires et aux administrateurs.
+   */
+  reservationRequests: ReservationRequests;
 };
 
 
 export type QueryDashboardArgs = {
   period: InputMaybe<PeriodInput>;
+};
+
+/**
+ * Réservation vue par le gestionnaire de la salle : champs du schéma Reservation du REST, avec la
+ * salle et le demandeur à la place de roomId et userId.
+ */
+export type ReservationRequest = {
+  __typename?: 'ReservationRequest';
+  comment: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  currency: Scalars['String']['output'];
+  endAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  numberOfParticipants: Maybe<Scalars['Int']['output']>;
+  requester: UserSummary;
+  room: RoomSummary;
+  startAt: Scalars['DateTime']['output'];
+  status: ReservationStatus;
+  totalAmount: Scalars['Float']['output'];
+};
+
+export type ReservationRequests = {
+  __typename?: 'ReservationRequests';
+  /**
+   * Demandes traitées (CONFIRMED, REJECTED, COMPLETED), la plus récente d'abord (date de début :
+   * la date de traitement n'est pas enregistrée). limit : 1 à 100.
+   */
+  handled: Array<ReservationRequest>;
+  /** Demandes en attente (PENDING), la plus proche d'abord. limit : 1 à 100. */
+  pending: Array<ReservationRequest>;
+};
+
+
+export type ReservationRequestsHandledArgs = {
+  limit?: Scalars['Int']['input'];
+};
+
+
+export type ReservationRequestsPendingArgs = {
+  limit?: Scalars['Int']['input'];
 };
 
 export type ReservationStatus =

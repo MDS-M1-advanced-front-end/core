@@ -4,7 +4,7 @@ import type { CodegenConfig } from '@graphql-codegen/cli';
 const config = {
   enumsAsTypes: true,
   useTypeImports: true,
-  scalars: { Date: 'string', ID: 'string' },
+  scalars: { Date: 'string', DateTime: 'string', ID: 'string' },
 };
 
 // pnpm generate:graphql : types du schéma admin.graphql, et ceux des requêtes de operations.ts

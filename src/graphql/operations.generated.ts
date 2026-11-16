@@ -29,3 +29,12 @@ export type AdminDashboardQueryVariables = Exact<{
 
 
 export type AdminDashboardQuery = { dashboard: { from: string | null, to: string | null, statistics: { totalUsers: number, totalRooms: number, totalReservations: number, confirmedReservations: number, cancelledReservations: number, totalRevenue: number }, byStatus: Array<{ status: ReservationStatus, count: number, amount: number }>, timeline: Array<{ date: string, reservations: number, confirmedReservations: number, revenue: number }>, rooms: Array<{ reservations: number, revenue: number, bookedHours: number, room: { id: string, name: string, location: string } }>, topClients: Array<{ reservations: number, revenue: number, user: { id: string, firstName: string, lastName: string } }> } };
+
+export type ReservationRequestsQueryVariables = Exact<{
+  handledLimit: number;
+}>;
+
+
+export type ReservationRequestsQuery = { reservationRequests: { pending: Array<{ id: string, startAt: string, endAt: string, status: ReservationStatus, numberOfParticipants: number | null, comment: string | null, totalAmount: number, currency: string, room: { id: string, name: string }, requester: { id: string, firstName: string, lastName: string } }>, handled: Array<{ id: string, startAt: string, endAt: string, status: ReservationStatus, numberOfParticipants: number | null, comment: string | null, totalAmount: number, currency: string, room: { id: string, name: string }, requester: { id: string, firstName: string, lastName: string } }> } };
+
+export type ReservationRequestFieldsFragment = { id: string, startAt: string, endAt: string, status: ReservationStatus, numberOfParticipants: number | null, comment: string | null, totalAmount: number, currency: string, room: { id: string, name: string }, requester: { id: string, firstName: string, lastName: string } };
