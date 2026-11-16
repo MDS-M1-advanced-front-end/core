@@ -1197,6 +1197,7 @@ components:
           minimum: 1
         comment:
           type: string
+          maxLength: 1000
 
     ReservationUpdateRequest:
       type: object
@@ -1213,12 +1214,14 @@ components:
           minimum: 1
         comment:
           type: string
+          maxLength: 1000
 
     ReservationRejectRequest:
       type: object
       properties:
         reason:
           type: string
+          maxLength: 1000
 
     Payment:
       type: object
