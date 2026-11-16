@@ -1,7 +1,7 @@
-# Contrat GraphQL du back-office : POST /api/graphql. Lecture seule, pour les écrans qui croisent
-# plusieurs ressources : tableaux de bord (administrateurs) et demandes de réservation
-# (gestionnaires et administrateurs). Il complète l'API REST (openapi.yml) sans la remplacer :
-# les écritures et les autres écrans restent en REST.
+# Contrat GraphQL du back-office : POST /api/graphql. Écrans qui croisent plusieurs ressources :
+# demandes de réservation (gestionnaires et administrateurs) et espace d'administration (tableau
+# de bord, utilisateurs, toutes les réservations, avec leurs actions). Il complète l'API REST
+# (openapi.yml) sans la remplacer : les écrans publics, clients et gestionnaires restent en REST.
 #
 # Toutes les statistiques portent sur la date de début des réservations, en heure de Paris.
 # Chiffre d'affaires : réservations CONFIRMED et COMPLETED (montant figé à la création), en EUR.
@@ -25,6 +25,12 @@ enum ReservationStatus {
   REJECTED
   CANCELLED
   COMPLETED
+}
+
+enum UserRole {
+  CLIENT
+  GESTIONNAIRE
+  ADMINISTRATEUR
 }
 
 enum RoomStatus {
@@ -63,6 +69,15 @@ input PeriodInput {
   to: Date
 }
 
+"""
+Filtres de la liste des réservations ; un filtre absent n'est pas appliqué.
+"""
+input ReservationFilter {
+  status: ReservationStatus
+  roomId: ID
+  userId: ID
+}
+
 type Query {
   """
   Tableau de bord sur une période (toutes les réservations si elle est absente).
@@ -74,6 +89,71 @@ type Query {
   salles), avec la salle et le demandeur. Réservé aux gestionnaires et aux administrateurs.
   """
   reservationRequests: ReservationRequests!
+  """
+  Utilisateurs, les derniers inscrits d'abord, filtrables par rôle. pageSize : 1 à 100.
+  Réservé aux administrateurs.
+  """
+  users(role: UserRole, page: Int! = 1, pageSize: Int! = 20): UserPage!
+  """
+  Toutes les réservations, la plus récente (date de début) d'abord, avec la salle et le demandeur.
+  pageSize : 1 à 100. Réservé aux administrateurs.
+  """
+  reservations(filter: ReservationFilter, page: Int! = 1, pageSize: Int! = 20): ReservationPage!
+}
+
+"""
+Actions de l'espace d'administration. Erreurs (extensions.status) : 404 si l'élément n'existe pas,
+409 si son état l'interdit.
+"""
+type Mutation {
+  """
+  Change le rôle d'un utilisateur. 409 sur son propre compte : un administrateur ne peut pas se
+  retirer ses droits. Réservé aux administrateurs.
+  """
+  changeUserRole(userId: ID!, role: UserRole!): User!
+  """
+  Supprime un utilisateur et ses salles ; renvoie son identifiant. 409 s'il a des réservations
+  (ou ses salles), ou sur son propre compte. Réservé aux administrateurs.
+  """
+  deleteUser(userId: ID!): ID!
+  """
+  Confirme une demande PENDING (comme POST /reservations/{id}/confirm). Gestionnaire de la salle ou
+  administrateur.
+  """
+  confirmReservation(reservationId: ID!): ReservationRequest!
+  """
+  Refuse une demande PENDING, avec un motif facultatif de 1000 caractères au plus (comme
+  POST /reservations/{id}/reject). Gestionnaire de la salle ou administrateur.
+  """
+  rejectReservation(reservationId: ID!, reason: String): ReservationRequest!
+  """
+  Annule une réservation PENDING ou CONFIRMED (comme DELETE /reservations/{id}). Réservé aux
+  administrateurs.
+  """
+  cancelReservation(reservationId: ID!): ReservationRequest!
+}
+
+type User {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  email: String!
+  role: UserRole!
+  createdAt: DateTime!
+}
+
+type UserPage {
+  items: [User!]!
+  page: Int!
+  pageSize: Int!
+  total: Int!
+}
+
+type ReservationPage {
+  items: [ReservationRequest!]!
+  page: Int!
+  pageSize: Int!
+  total: Int!
 }
 
 type Dashboard {
@@ -183,8 +263,8 @@ type ReservationRequests {
 }
 
 """
-Réservation vue par le gestionnaire de la salle : champs du schéma Reservation du REST, avec la
-salle et le demandeur à la place de roomId et userId.
+Réservation avec sa salle et son demandeur : champs du schéma Reservation du REST, avec room et
+requester à la place de roomId et userId.
 """
 type ReservationRequest {
   id: ID!
@@ -195,6 +275,10 @@ type ReservationRequest {
   status: ReservationStatus!
   numberOfParticipants: Int
   comment: String
+  """
+  Motif du refus (REJECTED), s'il a été donné.
+  """
+  rejectionReason: String
   totalAmount: Float!
   currency: String!
   createdAt: DateTime!

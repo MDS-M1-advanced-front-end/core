@@ -203,6 +203,8 @@ paths:
     patch:
       tags: [Utilisateurs]
       summary: Modifier un utilisateur
+      description: |
+        Un administrateur ne peut pas changer son propre rôle (409).
       parameters:
         - $ref: '#/components/parameters/UserId'
       requestBody:
@@ -222,9 +224,14 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
     delete:
       tags: [Utilisateurs]
       summary: Supprimer un utilisateur
+      description: |
+        Refusé (409) si des réservations sont rattachées à l'utilisateur ou à ses salles, ou si
+        l'administrateur supprime son propre compte.
       parameters:
         - $ref: '#/components/parameters/UserId'
       responses:
@@ -234,6 +241,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
 
   /rooms:
     get:

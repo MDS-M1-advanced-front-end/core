@@ -337,7 +337,11 @@ export interface paths {
         };
         put?: never;
         post?: never;
-        /** Supprimer un utilisateur */
+        /**
+         * Supprimer un utilisateur
+         * @description Refusé (409) si des réservations sont rattachées à l'utilisateur ou à ses salles, ou si
+         *     l'administrateur supprime son propre compte.
+         */
         delete: {
             parameters: {
                 query?: never;
@@ -358,11 +362,15 @@ export interface paths {
                 };
                 403: components["responses"]["Forbidden"];
                 404: components["responses"]["NotFound"];
+                409: components["responses"]["Conflict"];
             };
         };
         options?: never;
         head?: never;
-        /** Modifier un utilisateur */
+        /**
+         * Modifier un utilisateur
+         * @description Un administrateur ne peut pas changer son propre rôle (409).
+         */
         patch: {
             parameters: {
                 query?: never;
@@ -389,6 +397,7 @@ export interface paths {
                 };
                 403: components["responses"]["Forbidden"];
                 404: components["responses"]["NotFound"];
+                409: components["responses"]["Conflict"];
             };
         };
         trace?: never;

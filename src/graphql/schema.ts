@@ -62,6 +62,86 @@ export type Granularity =
   | 'MONTH'
   | 'WEEK';
 
+/**
+ * Actions de l'espace d'administration. Erreurs (extensions.status) : 404 si l'élément n'existe pas,
+ * 409 si son état l'interdit.
+ */
+export type Mutation = {
+  __typename?: 'Mutation';
+  /**
+   * Annule une réservation PENDING ou CONFIRMED (comme DELETE /reservations/{id}). Réservé aux
+   * administrateurs.
+   */
+  cancelReservation: ReservationRequest;
+  /**
+   * Change le rôle d'un utilisateur. 409 sur son propre compte : un administrateur ne peut pas se
+   * retirer ses droits. Réservé aux administrateurs.
+   */
+  changeUserRole: User;
+  /**
+   * Confirme une demande PENDING (comme POST /reservations/{id}/confirm). Gestionnaire de la salle ou
+   * administrateur.
+   */
+  confirmReservation: ReservationRequest;
+  /**
+   * Supprime un utilisateur et ses salles ; renvoie son identifiant. 409 s'il a des réservations
+   * (ou ses salles), ou sur son propre compte. Réservé aux administrateurs.
+   */
+  deleteUser: Scalars['ID']['output'];
+  /**
+   * Refuse une demande PENDING, avec un motif facultatif de 1000 caractères au plus (comme
+   * POST /reservations/{id}/reject). Gestionnaire de la salle ou administrateur.
+   */
+  rejectReservation: ReservationRequest;
+};
+
+
+/**
+ * Actions de l'espace d'administration. Erreurs (extensions.status) : 404 si l'élément n'existe pas,
+ * 409 si son état l'interdit.
+ */
+export type MutationCancelReservationArgs = {
+  reservationId: Scalars['ID']['input'];
+};
+
+
+/**
+ * Actions de l'espace d'administration. Erreurs (extensions.status) : 404 si l'élément n'existe pas,
+ * 409 si son état l'interdit.
+ */
+export type MutationChangeUserRoleArgs = {
+  role: UserRole;
+  userId: Scalars['ID']['input'];
+};
+
+
+/**
+ * Actions de l'espace d'administration. Erreurs (extensions.status) : 404 si l'élément n'existe pas,
+ * 409 si son état l'interdit.
+ */
+export type MutationConfirmReservationArgs = {
+  reservationId: Scalars['ID']['input'];
+};
+
+
+/**
+ * Actions de l'espace d'administration. Erreurs (extensions.status) : 404 si l'élément n'existe pas,
+ * 409 si son état l'interdit.
+ */
+export type MutationDeleteUserArgs = {
+  userId: Scalars['ID']['input'];
+};
+
+
+/**
+ * Actions de l'espace d'administration. Erreurs (extensions.status) : 404 si l'élément n'existe pas,
+ * 409 si son état l'interdit.
+ */
+export type MutationRejectReservationArgs = {
+  reason: InputMaybe<Scalars['String']['input']>;
+  reservationId: Scalars['ID']['input'];
+};
+
 /** Période sur la date de début des réservations, bornes incluses. Une borne absente n'est pas appliquée. */
 export type PeriodInput = {
   from?: InputMaybe<Scalars['Date']['input']>;
@@ -80,6 +160,16 @@ export type Query = {
    * salles), avec la salle et le demandeur. Réservé aux gestionnaires et aux administrateurs.
    */
   reservationRequests: ReservationRequests;
+  /**
+   * Toutes les réservations, la plus récente (date de début) d'abord, avec la salle et le demandeur.
+   * pageSize : 1 à 100. Réservé aux administrateurs.
+   */
+  reservations: ReservationPage;
+  /**
+   * Utilisateurs, les derniers inscrits d'abord, filtrables par rôle. pageSize : 1 à 100.
+   * Réservé aux administrateurs.
+   */
+  users: UserPage;
 };
 
 
@@ -87,9 +177,38 @@ export type QueryDashboardArgs = {
   period: InputMaybe<PeriodInput>;
 };
 
+
+export type QueryReservationsArgs = {
+  filter: InputMaybe<ReservationFilter>;
+  page?: Scalars['Int']['input'];
+  pageSize?: Scalars['Int']['input'];
+};
+
+
+export type QueryUsersArgs = {
+  page?: Scalars['Int']['input'];
+  pageSize?: Scalars['Int']['input'];
+  role: InputMaybe<UserRole>;
+};
+
+/** Filtres de la liste des réservations ; un filtre absent n'est pas appliqué. */
+export type ReservationFilter = {
+  roomId?: InputMaybe<Scalars['ID']['input']>;
+  status?: InputMaybe<ReservationStatus>;
+  userId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type ReservationPage = {
+  __typename?: 'ReservationPage';
+  items: Array<ReservationRequest>;
+  page: Scalars['Int']['output'];
+  pageSize: Scalars['Int']['output'];
+  total: Scalars['Int']['output'];
+};
+
 /**
- * Réservation vue par le gestionnaire de la salle : champs du schéma Reservation du REST, avec la
- * salle et le demandeur à la place de roomId et userId.
+ * Réservation avec sa salle et son demandeur : champs du schéma Reservation du REST, avec room et
+ * requester à la place de roomId et userId.
  */
 export type ReservationRequest = {
   __typename?: 'ReservationRequest';
@@ -99,6 +218,8 @@ export type ReservationRequest = {
   endAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
   numberOfParticipants: Maybe<Scalars['Int']['output']>;
+  /** Motif du refus (REJECTED), s'il a été donné. */
+  rejectionReason: Maybe<Scalars['String']['output']>;
   requester: UserSummary;
   room: RoomSummary;
   startAt: Scalars['DateTime']['output'];
@@ -193,6 +314,29 @@ export type TimelinePoint = {
   reservations: Scalars['Int']['output'];
   revenue: Scalars['Float']['output'];
 };
+
+export type User = {
+  __typename?: 'User';
+  createdAt: Scalars['DateTime']['output'];
+  email: Scalars['String']['output'];
+  firstName: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  lastName: Scalars['String']['output'];
+  role: UserRole;
+};
+
+export type UserPage = {
+  __typename?: 'UserPage';
+  items: Array<User>;
+  page: Scalars['Int']['output'];
+  pageSize: Scalars['Int']['output'];
+  total: Scalars['Int']['output'];
+};
+
+export type UserRole =
+  | 'ADMINISTRATEUR'
+  | 'CLIENT'
+  | 'GESTIONNAIRE';
 
 export type UserSummary = {
   __typename?: 'UserSummary';

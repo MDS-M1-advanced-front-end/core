@@ -48,18 +48,23 @@ pnpm generate:graphql  # src/graphql/schema.ts et operations.generated.ts depuis
 
 ## Contrat GraphQL du back-office
 
-`admin.graphql` décrit une API GraphQL **en lecture seule** (`POST /api/graphql`), pour les écrans qui croisent plusieurs ressources. Elle complète l'API REST sans la remplacer : les écritures et les autres écrans restent en REST.
+`admin.graphql` décrit l'API GraphQL du back-office (`POST /api/graphql`) : écran « Demandes » des gestionnaires et espace d'administration. Elle complète l'API REST sans la remplacer : les écrans publics, clients et gestionnaires restent en REST.
 
-Deux requêtes :
+Requêtes :
 
 - `dashboard(period)`, **réservée aux administrateurs** : tableaux de bord. Chaque champ (`statistics`, `byStatus`, `timeline`, `rooms`, `topClients`) n'est calculé que s'il est demandé, et prend ses propres arguments (pas de la série, critère de classement, nombre de lignes) ;
-- `reservationRequests`, **pour les gestionnaires et les administrateurs** : demandes de réservation de l'écran « Demandes », en attente (`pending`) et traitées (`handled`), avec la salle et le demandeur. Un gestionnaire ne voit que ses salles, un administrateur toutes. Elle remplace `GET /reservations`, la lecture de toutes les salles et un appel par salle et par demandeur (anomalies 4, 5 et 8).
+- `reservationRequests`, **pour les gestionnaires et les administrateurs** : demandes de réservation de l'écran « Demandes », en attente (`pending`) et traitées (`handled`), avec la salle et le demandeur. Un gestionnaire ne voit que ses salles, un administrateur toutes. Elle remplace `GET /reservations`, la lecture de toutes les salles et un appel par salle et par demandeur (anomalies 4, 5 et 8) ;
+- `users(role, page, pageSize)` et `reservations(filter, page, pageSize)`, **réservées aux administrateurs** : listes paginées de l'administration ; chaque réservation arrive avec sa salle et son demandeur.
+
+Mutations (administration) : `changeUserRole`, `deleteUser` (administrateurs ; jamais sur son propre compte), `confirmReservation`, `rejectReservation` (gestionnaire de la salle ou administrateur) et `cancelReservation` (administrateurs). Mêmes règles qu'en REST ; elles renvoient l'élément à jour.
 
 Import depuis `@room-booking/core/graphql`, séparé de l'index principal parce que certains types portent les mêmes noms qu'en REST (`Statistics`, `ReservationStatus`…) :
 
 ```ts
 import {
+  adminChangeUserRole,
   getAdminDashboard,
+  getAdminUsers,
   getReservationRequests,
   graphqlRequest,
 } from '@room-booking/core/graphql';
@@ -71,6 +76,8 @@ const result = await getAdminDashboard({
   limit: 5,
   period: { from: '2026-10-01' },
 });
+const managers = await getAdminUsers({ role: 'GESTIONNAIRE', page: 1, pageSize: 20 });
+const promoted = await adminChangeUserRole({ userId, role: 'GESTIONNAIRE' });
 
 // Requête sur mesure : seuls les champs demandés sont calculés
 const custom = await graphqlRequest<{
