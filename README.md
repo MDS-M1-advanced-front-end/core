@@ -1,6 +1,6 @@
 # core
 
-Package partagé `@room-booking/core`, indépendant de tout framework : types générés depuis le contrat d'API, client HTTP typé, règles métier et schémas Zod. Il est écrit ensemble en séance 2.
+Package partagé `@room-booking/core`, indépendant de tout framework : types générés depuis les contrats REST (`openapi.yml`) et GraphQL (`admin.graphql`), clients HTTP et GraphQL typés. Les règles métier et les schémas Zod, prévus, ne sont pas encore écrits. Il est écrit ensemble en séance 2.
 
 Chaque apprenant le copie dans son propre dépôt avec `pnpm core:sync`. Toute correction se fait ici, puis chacun relance la synchronisation.
 
