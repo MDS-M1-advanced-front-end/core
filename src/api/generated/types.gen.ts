@@ -176,6 +176,26 @@ export type Statistics = {
     totalRevenue: number;
 };
 
+export type ReservationStatusRequest = {
+    status: ReservationStatus;
+};
+
+export type TimelineDay = {
+    date: string;
+    total: number;
+    byStatus: {
+        PENDING_PAYMENT: number;
+        CONFIRMED: number;
+        REFUSED: number;
+        CANCELLED: number;
+        COMPLETED: number;
+    };
+};
+
+export type StatisticsTimeline = {
+    days: Array<TimelineDay>;
+};
+
 export type PageMeta = {
     page: number;
     pageSize: number;
@@ -1054,6 +1074,49 @@ export type RejectReservationResponses = {
 
 export type RejectReservationResponse = RejectReservationResponses[keyof RejectReservationResponses];
 
+export type SetReservationStatusData = {
+    body: ReservationStatusRequest;
+    path: {
+        reservationId: string;
+    };
+    query?: never;
+    url: '/reservations/{reservationId}/status';
+};
+
+export type SetReservationStatusErrors = {
+    /**
+     * Requête invalide
+     */
+    400: Error;
+    /**
+     * Authentification requise ou invalide
+     */
+    401: Error;
+    /**
+     * Accès interdit
+     */
+    403: Error;
+    /**
+     * Ressource introuvable
+     */
+    404: Error;
+    /**
+     * Conflit avec l'état actuel de la ressource (créneau indisponible, statut incompatible)
+     */
+    409: Error;
+};
+
+export type SetReservationStatusError = SetReservationStatusErrors[keyof SetReservationStatusErrors];
+
+export type SetReservationStatusResponses = {
+    /**
+     * État mis à jour
+     */
+    200: Reservation;
+};
+
+export type SetReservationStatusResponse = SetReservationStatusResponses[keyof SetReservationStatusResponses];
+
 export type CreatePaymentData = {
     body: PaymentCreateRequest;
     path?: never;
@@ -1204,3 +1267,39 @@ export type GetAdminStatisticsResponses = {
 };
 
 export type GetAdminStatisticsResponse = GetAdminStatisticsResponses[keyof GetAdminStatisticsResponses];
+
+export type GetAdminTimelineData = {
+    body?: never;
+    path?: never;
+    query?: {
+        from?: string;
+        to?: string;
+    };
+    url: '/admin/statistics/timeline';
+};
+
+export type GetAdminTimelineErrors = {
+    /**
+     * Requête invalide
+     */
+    400: Error;
+    /**
+     * Authentification requise ou invalide
+     */
+    401: Error;
+    /**
+     * Accès interdit
+     */
+    403: Error;
+};
+
+export type GetAdminTimelineError = GetAdminTimelineErrors[keyof GetAdminTimelineErrors];
+
+export type GetAdminTimelineResponses = {
+    /**
+     * Série temporelle
+     */
+    200: StatisticsTimeline;
+};
+
+export type GetAdminTimelineResponse = GetAdminTimelineResponses[keyof GetAdminTimelineResponses];

@@ -183,6 +183,26 @@ export const zStatistics = z.object({
     totalRevenue: z.number().gte(0)
 });
 
+export const zReservationStatusRequest = z.object({
+    status: zReservationStatus
+});
+
+export const zTimelineDay = z.object({
+    date: z.iso.date(),
+    total: z.int().gte(0),
+    byStatus: z.object({
+        PENDING_PAYMENT: z.int().gte(0),
+        CONFIRMED: z.int().gte(0),
+        REFUSED: z.int().gte(0),
+        CANCELLED: z.int().gte(0),
+        COMPLETED: z.int().gte(0)
+    })
+});
+
+export const zStatisticsTimeline = z.object({
+    days: z.array(zTimelineDay)
+});
+
 export const zPageMeta = z.object({
     page: z.int().gte(1),
     pageSize: z.int().gte(1),
@@ -439,6 +459,17 @@ export const zRejectReservationPath = z.object({
  */
 export const zRejectReservationResponse = zReservation;
 
+export const zSetReservationStatusBody = zReservationStatusRequest;
+
+export const zSetReservationStatusPath = z.object({
+    reservationId: z.uuid()
+});
+
+/**
+ * État mis à jour
+ */
+export const zSetReservationStatusResponse = zReservation;
+
 export const zCreatePaymentBody = zPaymentCreateRequest;
 
 /**
@@ -477,3 +508,13 @@ export const zGetAdminStatisticsQuery = z.object({
  * Statistiques de la plateforme
  */
 export const zGetAdminStatisticsResponse = zStatistics;
+
+export const zGetAdminTimelineQuery = z.object({
+    from: z.iso.date().optional(),
+    to: z.iso.date().optional()
+});
+
+/**
+ * Série temporelle
+ */
+export const zGetAdminTimelineResponse = zStatisticsTimeline;

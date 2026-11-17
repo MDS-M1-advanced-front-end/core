@@ -697,6 +697,41 @@ paths:
         '409':
           $ref: '#/components/responses/Conflict'
 
+  /reservations/{reservationId}/status:
+    post:
+      tags: [Réservations]
+      operationId: setReservationStatus
+      summary: Changer l'état d'une réservation (débogage admin)
+      description: |
+        Réservé aux administrateurs. Applique une transition autorisée par la machine
+        d'état (PENDING_PAYMENT vers CONFIRMED, REFUSED ou CANCELLED ; CONFIRMED vers
+        CANCELLED ou COMPLETED). Toute autre transition est refusée (409). Pas de contournement.
+      parameters:
+        - $ref: '#/components/parameters/ReservationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservationStatusRequest'
+      responses:
+        '200':
+          description: État mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
   /payments:
     post:
       tags: [Paiement]
@@ -816,6 +851,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Statistics'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/statistics/timeline:
+    get:
+      tags: [Administration]
+      operationId: getAdminTimeline
+      summary: Réservations par jour et par état
+      description: Réservé aux administrateurs. Jours sans réservation omis. Date de début (startAt) en UTC.
+      parameters:
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Série temporelle
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatisticsTimeline'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -1334,6 +1400,52 @@ components:
           type: number
           format: double
           minimum: 0
+
+    ReservationStatusRequest:
+      type: object
+      required: [status]
+      properties:
+        status:
+          $ref: '#/components/schemas/ReservationStatus'
+
+    TimelineDay:
+      type: object
+      required: [date, total, byStatus]
+      properties:
+        date:
+          type: string
+          format: date
+        total:
+          type: integer
+          minimum: 0
+        byStatus:
+          type: object
+          required: [PENDING_PAYMENT, CONFIRMED, REFUSED, CANCELLED, COMPLETED]
+          properties:
+            PENDING_PAYMENT:
+              type: integer
+              minimum: 0
+            CONFIRMED:
+              type: integer
+              minimum: 0
+            REFUSED:
+              type: integer
+              minimum: 0
+            CANCELLED:
+              type: integer
+              minimum: 0
+            COMPLETED:
+              type: integer
+              minimum: 0
+
+    StatisticsTimeline:
+      type: object
+      required: [days]
+      properties:
+        days:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimelineDay'
 
     PageMeta:
       type: object

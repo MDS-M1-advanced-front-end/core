@@ -4,8 +4,8 @@ import * as z from 'zod';
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { CancelReservationData, CancelReservationErrors, CancelReservationResponses, ChangePasswordData, ChangePasswordErrors, ChangePasswordResponses, ConfirmReservationData, ConfirmReservationErrors, ConfirmReservationResponses, CreatePaymentData, CreatePaymentErrors, CreatePaymentResponses, CreateReservationData, CreateReservationErrors, CreateReservationResponses, CreateRoomData, CreateRoomErrors, CreateRoomResponses, DeleteRoomData, DeleteRoomErrors, DeleteRoomResponses, DeleteUserData, DeleteUserErrors, DeleteUserResponses, GetAdminStatisticsData, GetAdminStatisticsErrors, GetAdminStatisticsResponses, GetCurrentUserData, GetCurrentUserErrors, GetCurrentUserResponses, GetPaymentData, GetPaymentErrors, GetPaymentResponses, GetReservationData, GetReservationErrors, GetReservationResponses, GetRoomAvailabilityData, GetRoomAvailabilityErrors, GetRoomAvailabilityResponses, GetRoomData, GetRoomErrors, GetRoomResponses, GetUserData, GetUserErrors, GetUserResponses, ListAdminReservationsData, ListAdminReservationsErrors, ListAdminReservationsResponses, ListReservationsData, ListReservationsErrors, ListReservationsResponses, ListRoomsData, ListRoomsErrors, ListRoomsResponses, ListUsersData, ListUsersErrors, ListUsersResponses, LoginUserData, LoginUserErrors, LoginUserResponses, LogoutUserData, LogoutUserErrors, LogoutUserResponses, RegisterUserData, RegisterUserErrors, RegisterUserResponses, RejectReservationData, RejectReservationErrors, RejectReservationResponses, SetRoomAvailabilityData, SetRoomAvailabilityErrors, SetRoomAvailabilityResponses, UpdateReservationData, UpdateReservationErrors, UpdateReservationResponses, UpdateRoomData, UpdateRoomErrors, UpdateRoomResponses, UpdateUserData, UpdateUserErrors, UpdateUserResponses } from './types.gen';
-import { zCancelReservationPath, zCancelReservationResponse, zChangePasswordBody, zChangePasswordResponse, zConfirmReservationPath, zConfirmReservationResponse, zCreatePaymentBody, zCreatePaymentResponse, zCreateReservationBody, zCreateReservationResponse, zCreateRoomBody, zCreateRoomResponse, zDeleteRoomPath, zDeleteRoomResponse, zDeleteUserPath, zDeleteUserResponse, zGetAdminStatisticsQuery, zGetAdminStatisticsResponse, zGetCurrentUserResponse, zGetPaymentPath, zGetPaymentResponse, zGetReservationPath, zGetReservationResponse, zGetRoomAvailabilityPath, zGetRoomAvailabilityQuery, zGetRoomAvailabilityResponse, zGetRoomPath, zGetRoomResponse, zGetUserPath, zGetUserResponse, zListAdminReservationsQuery, zListAdminReservationsResponse, zListReservationsQuery, zListReservationsResponse, zListRoomsQuery, zListRoomsResponse, zListUsersQuery, zListUsersResponse, zLoginUserBody, zLoginUserResponse, zLogoutUserResponse, zRegisterUserBody, zRegisterUserResponse, zRejectReservationBody, zRejectReservationPath, zRejectReservationResponse, zSetRoomAvailabilityBody, zSetRoomAvailabilityPath, zSetRoomAvailabilityResponse, zUpdateReservationBody, zUpdateReservationPath, zUpdateReservationResponse, zUpdateRoomBody, zUpdateRoomPath, zUpdateRoomResponse, zUpdateUserBody, zUpdateUserPath, zUpdateUserResponse } from './zod.gen';
+import type { CancelReservationData, CancelReservationErrors, CancelReservationResponses, ChangePasswordData, ChangePasswordErrors, ChangePasswordResponses, ConfirmReservationData, ConfirmReservationErrors, ConfirmReservationResponses, CreatePaymentData, CreatePaymentErrors, CreatePaymentResponses, CreateReservationData, CreateReservationErrors, CreateReservationResponses, CreateRoomData, CreateRoomErrors, CreateRoomResponses, DeleteRoomData, DeleteRoomErrors, DeleteRoomResponses, DeleteUserData, DeleteUserErrors, DeleteUserResponses, GetAdminStatisticsData, GetAdminStatisticsErrors, GetAdminStatisticsResponses, GetAdminTimelineData, GetAdminTimelineErrors, GetAdminTimelineResponses, GetCurrentUserData, GetCurrentUserErrors, GetCurrentUserResponses, GetPaymentData, GetPaymentErrors, GetPaymentResponses, GetReservationData, GetReservationErrors, GetReservationResponses, GetRoomAvailabilityData, GetRoomAvailabilityErrors, GetRoomAvailabilityResponses, GetRoomData, GetRoomErrors, GetRoomResponses, GetUserData, GetUserErrors, GetUserResponses, ListAdminReservationsData, ListAdminReservationsErrors, ListAdminReservationsResponses, ListReservationsData, ListReservationsErrors, ListReservationsResponses, ListRoomsData, ListRoomsErrors, ListRoomsResponses, ListUsersData, ListUsersErrors, ListUsersResponses, LoginUserData, LoginUserErrors, LoginUserResponses, LogoutUserData, LogoutUserErrors, LogoutUserResponses, RegisterUserData, RegisterUserErrors, RegisterUserResponses, RejectReservationData, RejectReservationErrors, RejectReservationResponses, SetReservationStatusData, SetReservationStatusErrors, SetReservationStatusResponses, SetRoomAvailabilityData, SetRoomAvailabilityErrors, SetRoomAvailabilityResponses, UpdateReservationData, UpdateReservationErrors, UpdateReservationResponses, UpdateRoomData, UpdateRoomErrors, UpdateRoomResponses, UpdateUserData, UpdateUserErrors, UpdateUserResponses } from './types.gen';
+import { zCancelReservationPath, zCancelReservationResponse, zChangePasswordBody, zChangePasswordResponse, zConfirmReservationPath, zConfirmReservationResponse, zCreatePaymentBody, zCreatePaymentResponse, zCreateReservationBody, zCreateReservationResponse, zCreateRoomBody, zCreateRoomResponse, zDeleteRoomPath, zDeleteRoomResponse, zDeleteUserPath, zDeleteUserResponse, zGetAdminStatisticsQuery, zGetAdminStatisticsResponse, zGetAdminTimelineQuery, zGetAdminTimelineResponse, zGetCurrentUserResponse, zGetPaymentPath, zGetPaymentResponse, zGetReservationPath, zGetReservationResponse, zGetRoomAvailabilityPath, zGetRoomAvailabilityQuery, zGetRoomAvailabilityResponse, zGetRoomPath, zGetRoomResponse, zGetUserPath, zGetUserResponse, zListAdminReservationsQuery, zListAdminReservationsResponse, zListReservationsQuery, zListReservationsResponse, zListRoomsQuery, zListRoomsResponse, zListUsersQuery, zListUsersResponse, zLoginUserBody, zLoginUserResponse, zLogoutUserResponse, zRegisterUserBody, zRegisterUserResponse, zRejectReservationBody, zRejectReservationPath, zRejectReservationResponse, zSetReservationStatusBody, zSetReservationStatusPath, zSetReservationStatusResponse, zSetRoomAvailabilityBody, zSetRoomAvailabilityPath, zSetRoomAvailabilityResponse, zUpdateReservationBody, zUpdateReservationPath, zUpdateReservationResponse, zUpdateRoomBody, zUpdateRoomPath, zUpdateRoomResponse, zUpdateUserBody, zUpdateUserPath, zUpdateUserResponse } from './zod.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -473,6 +473,30 @@ export const rejectReservation = <ThrowOnError extends boolean = false>(options:
 });
 
 /**
+ * Changer l'état d'une réservation (débogage admin)
+ *
+ * Réservé aux administrateurs. Applique une transition autorisée par la machine
+ * d'état (PENDING_PAYMENT vers CONFIRMED, REFUSED ou CANCELLED ; CONFIRMED vers
+ * CANCELLED ou COMPLETED). Toute autre transition est refusée (409). Pas de contournement.
+ *
+ */
+export const setReservationStatus = <ThrowOnError extends boolean = false>(options: Options<SetReservationStatusData, ThrowOnError>): RequestResult<SetReservationStatusResponses, SetReservationStatusErrors, ThrowOnError> => (options.client ?? client).post<SetReservationStatusResponses, SetReservationStatusErrors, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: zSetReservationStatusBody,
+        path: zSetReservationStatusPath,
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zSetReservationStatusResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/reservations/{reservationId}/status',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
  * Initier le paiement d'une réservation
  *
  * Réservé au client auteur de la réservation.
@@ -547,5 +571,22 @@ export const getAdminStatistics = <ThrowOnError extends boolean = false>(options
     responseValidator: async (data) => await zGetAdminStatisticsResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/admin/statistics',
+    ...options
+});
+
+/**
+ * Réservations par jour et par état
+ *
+ * Réservé aux administrateurs. Jours sans réservation omis. Date de début (startAt) en UTC.
+ */
+export const getAdminTimeline = <ThrowOnError extends boolean = false>(options?: Options<GetAdminTimelineData, ThrowOnError>): RequestResult<GetAdminTimelineResponses, GetAdminTimelineErrors, ThrowOnError> => (options?.client ?? client).get<GetAdminTimelineResponses, GetAdminTimelineErrors, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: z.never().optional(),
+        path: z.never().optional(),
+        query: zGetAdminTimelineQuery.optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zGetAdminTimelineResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/admin/statistics/timeline',
     ...options
 });
