@@ -3,7 +3,15 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   // src/api/schema.ts : généré par openapi-typescript (séance 2)
-  { ignores: ['node_modules', 'src/api/schema.ts'] },
+  // src/graphql/schema.ts et operations.generated.ts : générés par graphql-codegen
+  {
+    ignores: [
+      'node_modules',
+      'src/api/schema.ts',
+      'src/graphql/schema.ts',
+      'src/graphql/operations.generated.ts',
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
   {
